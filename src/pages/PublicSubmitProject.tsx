@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { REGIONS } from '../data/regions';
-import { PROJECT_CATEGORIES } from '../types';
+import { PROJECT_CATEGORIES, ProjectAttachment } from '../types';
 import { useData } from '../context/DataContext';
+import FileUpload from '../components/FileUpload/FileUpload';
 import {
   ArrowLeft,
   Users,
@@ -16,6 +17,7 @@ import {
   Loader2,
   FileText,
   Building,
+  Paperclip,
 } from 'lucide-react';
 
 interface MemberInput {
@@ -39,6 +41,7 @@ const PublicSubmitProject: React.FC = () => {
   const [projectTitle, setProjectTitle] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [projectCategory, setProjectCategory] = useState('');
+  const [projectAttachments, setProjectAttachments] = useState<ProjectAttachment[]>([]);
   const [members, setMembers] = useState<MemberInput[]>([
     { fullName: '', phone: '', districtId: '', districtName: '', mahallaName: '' }
   ]);
@@ -145,6 +148,7 @@ const PublicSubmitProject: React.FC = () => {
         hackathonId: `hackathon-${regionId}`,
         status: 'submitted',
         isApprovedByDirector: false,
+        attachments: projectAttachments,
       });
 
       setIsSuccess(true);
@@ -404,6 +408,27 @@ const PublicSubmitProject: React.FC = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none"
                 />
               </div>
+
+              {/* File Upload */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <Paperclip className="w-4 h-4" />
+                  Fayllar (ixtiyoriy)
+                </label>
+                <p className="text-sm text-gray-500 mb-3">
+                  Prezentatsiya, hujjatlar yoki rasmlar yuklashingiz mumkin
+                </p>
+                <FileUpload
+                  projectId={`public-${Date.now()}`}
+                  attachments={projectAttachments}
+                  onUploadComplete={(attachment) => {
+                    setProjectAttachments(prev => [...prev, attachment]);
+                  }}
+                  onDelete={(attachmentId) => {
+                    setProjectAttachments(prev => prev.filter(a => a.id !== attachmentId));
+                  }}
+                />
+              </div>
             </div>
           )}
 
@@ -438,6 +463,14 @@ const PublicSubmitProject: React.FC = () => {
                   <p className="font-semibold text-emerald-900">{projectTitle}</p>
                   <p className="text-sm text-emerald-700 mt-1">{projectCategory}</p>
                   <p className="text-sm text-emerald-600 mt-2 line-clamp-3">{projectDescription}</p>
+                  {projectAttachments.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-emerald-200">
+                      <p className="text-xs text-emerald-600 flex items-center gap-1">
+                        <Paperclip className="w-3 h-3" />
+                        {projectAttachments.length} ta fayl yuklangan
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 

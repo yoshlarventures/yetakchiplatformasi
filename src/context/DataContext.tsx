@@ -1,6 +1,58 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Team, Project, ProjectStatus, ProjectHistoryItem } from '../types';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Team, Project, ProjectStatus, ProjectHistoryItem, ProjectAttachment } from '../types';
 import { TEAMS as INITIAL_TEAMS, PROJECTS as INITIAL_PROJECTS } from '../data/mockData';
+
+// localStorage kalitlari
+const STORAGE_KEYS = {
+  teams: 'yetakchi_teams',
+  projects: 'yetakchi_projects',
+};
+
+// Date larni qayta tiklash uchun helper
+const reviveDates = (obj: any): any => {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === 'string') {
+    // ISO date formatini tekshirish
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(obj)) {
+      return new Date(obj);
+    }
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(reviveDates);
+  }
+  if (typeof obj === 'object') {
+    const result: any = {};
+    for (const key in obj) {
+      result[key] = reviveDates(obj[key]);
+    }
+    return result;
+  }
+  return obj;
+};
+
+// localStorage'dan o'qish
+const loadFromStorage = <T,>(key: string, fallback: T): T => {
+  try {
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return reviveDates(parsed);
+    }
+  } catch (error) {
+    console.error(`Error loading ${key} from localStorage:`, error);
+  }
+  return fallback;
+};
+
+// localStorage'ga yozish
+const saveToStorage = <T,>(key: string, data: T): void => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error(`Error saving ${key} to localStorage:`, error);
+  }
+};
 
 interface DataContextType {
   teams: Team[];
@@ -11,7 +63,6 @@ interface DataContextType {
   addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'history'>) => Project;
   updateProject: (projectId: string, updates: Partial<Project>) => void;
   deleteProject: (projectId: string) => void;
-  // Yangi funksiyalar
   changeProjectStatus: (projectId: string, status: ProjectStatus, action: string, description: string, actor: string) => void;
   submitProject: (projectId: string) => void;
   presentProject: (projectId: string) => void;
@@ -23,15 +74,36 @@ interface DataContextType {
   getTeamsByRegion: (regionId: string) => Team[];
   getProjectsByRegion: (regionId: string) => Project[];
   getProjectByTeamId: (teamId: string) => Project | undefined;
+  addAttachment: (projectId: string, attachment: ProjectAttachment) => void;
+  removeAttachment: (projectId: string, attachmentId: string) => void;
+  clearAllData: () => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [teams, setTeams] = useState<Team[]>(INITIAL_TEAMS);
-  const [projects, setProjects] = useState<Project[]>(
-    INITIAL_PROJECTS.map(p => ({ ...p, history: p.history || [] }))
-  );
+  // localStorage'dan yuklash yoki boshlang'ich qiymatlarni olish
+  const [teams, setTeams] = useState<Team[]>(() => {
+    const stored = loadFromStorage<Team[]>(STORAGE_KEYS.teams, []);
+    return stored.length > 0 ? stored : INITIAL_TEAMS;
+  });
+
+  const [projects, setProjects] = useState<Project[]>(() => {
+    const stored = loadFromStorage<Project[]>(STORAGE_KEYS.projects, []);
+    if (stored.length > 0) {
+      return stored.map(p => ({ ...p, history: p.history || [] }));
+    }
+    return INITIAL_PROJECTS.map(p => ({ ...p, history: p.history || [] }));
+  });
+
+  // Ma'lumotlar o'zgarganda localStorage'ga saqlash
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.teams, teams);
+  }, [teams]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.projects, projects);
+  }, [projects]);
 
   const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -121,7 +193,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }));
   };
 
-  // Loyihani ko'rib chiqishga yuborish
   const submitProject = (projectId: string) => {
     changeProjectStatus(
       projectId,
@@ -132,7 +203,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
   };
 
-  // Direktorga taqdimot qilish
   const presentProject = (projectId: string) => {
     changeProjectStatus(
       projectId,
@@ -143,7 +213,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
   };
 
-  // Maqullash
   const approveProject = (projectId: string, data: { notes: string; partner?: string; partnerType?: string; budget?: number }) => {
     setProjects(prev => prev.map(project => {
       if (project.id === projectId) {
@@ -162,7 +231,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           approvalDate: new Date(),
           approvalNotes: data.notes,
           assignedPartner: data.partner,
-          partnerType: data.partnerType as any,
+          partnerType: data.partnerType as Project['partnerType'],
           allocatedBudget: data.budget,
           budgetCurrency: 'UZS',
           history: [...(project.history || []), historyItem],
@@ -173,7 +242,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }));
   };
 
-  // Rad etish
   const rejectProject = (projectId: string, reason: string) => {
     setProjects(prev => prev.map(project => {
       if (project.id === projectId) {
@@ -199,7 +267,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }));
   };
 
-  // Qayta ishlash so'rovi
   const requestRevision = (projectId: string, notes: string) => {
     setProjects(prev => prev.map(project => {
       if (project.id === projectId) {
@@ -223,7 +290,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }));
   };
 
-  // Ishni boshlash
   const startProject = (projectId: string) => {
     changeProjectStatus(
       projectId,
@@ -234,7 +300,6 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
   };
 
-  // Yakunlash
   const completeProject = (projectId: string) => {
     changeProjectStatus(
       projectId,
@@ -255,6 +320,40 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const getProjectByTeamId = (teamId: string) => {
     return projects.find(project => project.teamId === teamId);
+  };
+
+  const addAttachment = (projectId: string, attachment: ProjectAttachment) => {
+    setProjects(prev => prev.map(project => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          attachments: [...(project.attachments || []), attachment],
+          updatedAt: new Date(),
+        };
+      }
+      return project;
+    }));
+  };
+
+  const removeAttachment = (projectId: string, attachmentId: string) => {
+    setProjects(prev => prev.map(project => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          attachments: (project.attachments || []).filter(a => a.id !== attachmentId),
+          updatedAt: new Date(),
+        };
+      }
+      return project;
+    }));
+  };
+
+  // Barcha ma'lumotlarni tozalash (kerak bo'lsa)
+  const clearAllData = () => {
+    localStorage.removeItem(STORAGE_KEYS.teams);
+    localStorage.removeItem(STORAGE_KEYS.projects);
+    setTeams(INITIAL_TEAMS);
+    setProjects(INITIAL_PROJECTS.map(p => ({ ...p, history: p.history || [] })));
   };
 
   return (
@@ -278,6 +377,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       getTeamsByRegion,
       getProjectsByRegion,
       getProjectByTeamId,
+      addAttachment,
+      removeAttachment,
+      clearAllData,
     }}>
       {children}
     </DataContext.Provider>

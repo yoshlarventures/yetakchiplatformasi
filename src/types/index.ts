@@ -84,6 +84,7 @@ export const HACKATHON_STATUS_NAMES = {
 
 // Loyiha statusi
 export type ProjectStatus =
+  | 'preparation'      // Tayyorgarlik - hakaton oldidan
   | 'draft'            // Qoralama
   | 'submitted'        // Topshirilgan - ko'rib chiqishga yuborildi
   | 'under_review'     // Ko'rib chiqilmoqda
@@ -93,6 +94,22 @@ export type ProjectStatus =
   | 'revision'         // Qayta ishlash kerak
   | 'in_progress'      // Amalga oshirilmoqda
   | 'completed';       // Yakunlandi
+
+// Fayl turi
+export type FileType = 'presentation' | 'document' | 'image' | 'video' | 'other';
+
+// Biriktirilgan fayl
+export interface ProjectAttachment {
+  id: string;
+  name: string;
+  originalName: string;
+  url: string;
+  type: FileType;
+  size: number; // bytes
+  mimeType: string;
+  uploadedAt: Date;
+  uploadedBy: string;
+}
 
 // Loyiha tarixi (timeline)
 export interface ProjectHistoryItem {
@@ -139,6 +156,13 @@ export interface Project {
 
   // O'xshash loyihalar
   similarProjectIds?: string[];
+
+  // Biriktirilgan fayllar
+  attachments?: ProjectAttachment[];
+
+  // Tayyorgarlik bosqichi
+  isPreparation?: boolean;
+  preparationNotes?: string;
 
   // Loyiha tarixi
   history: ProjectHistoryItem[];

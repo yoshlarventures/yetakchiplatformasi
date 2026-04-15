@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { REGIONS } from '../../data/regions';
 import { Project, PROJECT_CATEGORIES, PARTNER_TYPES } from '../../types';
+import FileUpload from '../../components/FileUpload/FileUpload';
 import {
   Search,
   X,
@@ -15,6 +16,8 @@ import {
   Trophy,
   Presentation,
   ChevronRight,
+  Paperclip,
+  Rocket,
 } from 'lucide-react';
 
 const UserProjects: React.FC = () => {
@@ -30,6 +33,8 @@ const UserProjects: React.FC = () => {
     requestRevision,
     startProject,
     completeProject,
+    addAttachment,
+    removeAttachment,
   } = useData();
   const regionId = user?.regionId || '';
   const region = REGIONS.find(r => r.id === regionId);
@@ -37,7 +42,7 @@ const UserProjects: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [activeTab, setActiveTab] = useState<'details' | 'action' | 'history'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'files' | 'action' | 'history'>('details');
 
   // Form states
   const [editTitle, setEditTitle] = useState('');
@@ -66,6 +71,7 @@ const UserProjects: React.FC = () => {
 
   const getStatusConfig = (status: string) => {
     const configs: Record<string, { bg: string; text: string; label: string; icon: any }> = {
+      preparation: { bg: 'bg-indigo-100', text: 'text-indigo-700', label: 'Tayyorgarlik', icon: Rocket },
       draft: { bg: 'bg-gray-100', text: 'text-gray-600', label: 'Qoralama', icon: Edit3 },
       submitted: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Yuborilgan', icon: Send },
       presented: { bg: 'bg-purple-100', text: 'text-purple-700', label: 'Taqdimot qilindi', icon: Presentation },
@@ -198,6 +204,8 @@ const UserProjects: React.FC = () => {
           className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none min-w-[180px]"
         >
           <option value="all">Barcha statuslar</option>
+          <option value="preparation">Tayyorgarlik</option>
+          <option value="draft">Qoralama</option>
           <option value="submitted">Yuborilgan</option>
           <option value="presented">Taqdimot qilindi</option>
           <option value="approved">Maqullangan</option>
@@ -227,7 +235,15 @@ const UserProjects: React.FC = () => {
                     <span className="text-sm text-gray-400">{project.category}</span>
                   </div>
                   <h3 className="font-semibold text-gray-900 text-lg">{project.title}</h3>
-                  <p className="text-gray-500 text-sm mt-1">{getTeamName(project.teamId)}</p>
+                  <div className="flex items-center gap-3 mt-1">
+                    <p className="text-gray-500 text-sm">{getTeamName(project.teamId)}</p>
+                    {(project.attachments?.length || 0) > 0 && (
+                      <span className="flex items-center gap-1 text-xs text-gray-400">
+                        <Paperclip className="w-3 h-3" />
+                        {project.attachments?.length} fayl
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -271,17 +287,23 @@ const UserProjects: React.FC = () => {
 
             {/* Tabs */}
             <div className="flex border-b">
-              {['details', 'action', 'history'].map((tab) => (
+              {['details', 'files', 'action', 'history'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab as any)}
-                  className={`flex-1 py-3 text-sm font-medium transition-colors ${
+                  className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
                     activeTab === tab
                       ? 'text-emerald-600 border-b-2 border-emerald-600'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  {tab === 'details' ? 'Ma\'lumotlar' : tab === 'action' ? 'Amallar' : 'Tarix'}
+                  {tab === 'files' && <Paperclip className="w-4 h-4" />}
+                  {tab === 'details' ? 'Ma\'lumotlar' : tab === 'files' ? 'Fayllar' : tab === 'action' ? 'Amallar' : 'Tarix'}
+                  {tab === 'files' && (selectedProject.attachments?.length || 0) > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full">
+                      {selectedProject.attachments?.length}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -290,7 +312,7 @@ const UserProjects: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-5">
               {activeTab === 'details' && (
                 <div className="space-y-5">
-                  {['draft', 'revision'].includes(selectedProject.status) ? (
+                  {['preparation', 'draft', 'revision'].includes(selectedProject.status) ? (
                     <>
                       <div>
                         <label className="text-sm text-gray-500 mb-1 block">Loyiha nomi</label>
@@ -385,10 +407,40 @@ const UserProjects: React.FC = () => {
                 </div>
               )}
 
+              {activeTab === 'files' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Loyiha fayllari</h3>
+                      <p className="text-sm text-gray-500">Prezentatsiya, hujjatlar va boshqa materiallar</p>
+                    </div>
+                  </div>
+                  <FileUpload
+                    projectId={selectedProject.id}
+                    attachments={selectedProject.attachments || []}
+                    onUploadComplete={(attachment) => {
+                      addAttachment(selectedProject.id, attachment);
+                      setSelectedProject({
+                        ...selectedProject,
+                        attachments: [...(selectedProject.attachments || []), attachment],
+                      });
+                    }}
+                    onDelete={(attachmentId) => {
+                      removeAttachment(selectedProject.id, attachmentId);
+                      setSelectedProject({
+                        ...selectedProject,
+                        attachments: (selectedProject.attachments || []).filter(a => a.id !== attachmentId),
+                      });
+                    }}
+                    disabled={['completed', 'rejected'].includes(selectedProject.status)}
+                  />
+                </div>
+              )}
+
               {activeTab === 'action' && (
                 <div className="space-y-4">
                   {/* Yuborish */}
-                  {['draft', 'revision'].includes(selectedProject.status) && (
+                  {['preparation', 'draft', 'revision'].includes(selectedProject.status) && (
                     <button
                       onClick={handleSubmit}
                       className="w-full py-4 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 flex items-center justify-center gap-2"

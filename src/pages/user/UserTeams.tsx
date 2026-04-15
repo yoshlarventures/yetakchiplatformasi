@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { REGIONS } from '../../data/regions';
-import { Team, TeamMember, PROJECT_CATEGORIES } from '../../types';
+import { Team, TeamMember, PROJECT_CATEGORIES, ProjectAttachment } from '../../types';
+import FileUpload from '../../components/FileUpload/FileUpload';
 import {
   Search,
   Eye,
@@ -16,6 +17,7 @@ import {
   Edit3,
   Save,
   UserPlus,
+  Paperclip,
 } from 'lucide-react';
 
 const UserTeams: React.FC = () => {
@@ -39,6 +41,7 @@ const UserTeams: React.FC = () => {
   const [projectTitle, setProjectTitle] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [projectCategory, setProjectCategory] = useState<string>(PROJECT_CATEGORIES[0]);
+  const [projectAttachments, setProjectAttachments] = useState<ProjectAttachment[]>([]);
 
   const regionTeams = getTeamsByRegion(regionId);
 
@@ -123,10 +126,12 @@ const UserTeams: React.FC = () => {
       setProjectTitle(existingProject.title);
       setProjectDescription(existingProject.description);
       setProjectCategory(existingProject.category);
+      setProjectAttachments(existingProject.attachments || []);
     } else {
       setProjectTitle('');
       setProjectDescription('');
       setProjectCategory(PROJECT_CATEGORIES[0]);
+      setProjectAttachments([]);
     }
     setSelectedTeam(team);
     setIsEditingProject(true);
@@ -146,6 +151,7 @@ const UserTeams: React.FC = () => {
         title: projectTitle,
         description: projectDescription,
         category: projectCategory,
+        attachments: projectAttachments,
       });
     } else {
       addProject({
@@ -155,8 +161,9 @@ const UserTeams: React.FC = () => {
         teamId: selectedTeam.id,
         regionId,
         hackathonId: `hackathon-${regionId}`,
-        status: 'submitted',
+        status: 'draft',
         isApprovedByDirector: false,
+        attachments: projectAttachments,
       });
     }
 
@@ -475,6 +482,24 @@ const UserTeams: React.FC = () => {
                       placeholder="Loyiha haqida qisqacha ma'lumot..."
                       rows={4}
                       className="input-field resize-none"
+                    />
+                  </div>
+
+                  {/* File Upload */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                      <Paperclip className="w-4 h-4" />
+                      Fayllar (prezentatsiya, hujjatlar)
+                    </label>
+                    <FileUpload
+                      projectId={selectedTeam?.id || 'new-project'}
+                      attachments={projectAttachments}
+                      onUploadComplete={(attachment) => {
+                        setProjectAttachments(prev => [...prev, attachment]);
+                      }}
+                      onDelete={(attachmentId) => {
+                        setProjectAttachments(prev => prev.filter(a => a.id !== attachmentId));
+                      }}
                     />
                   </div>
 
