@@ -30,6 +30,11 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          BASE_URL: /yetakchiplatformasi/
+
+      - name: Debug - Show built index.html
+        run: cat dist/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
