@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Team, Project, ProjectStatus, ProjectHistoryItem, ProjectAttachment } from '../types';
-import { TEAMS as INITIAL_TEAMS, PROJECTS as INITIAL_PROJECTS } from '../data/mockData';
 
 // localStorage kalitlari
 const STORAGE_KEYS = {
@@ -82,18 +81,14 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // localStorage'dan yuklash yoki boshlang'ich qiymatlarni olish
+  // localStorage'dan yuklash (foydalanuvchilar o'zlari ma'lumot qo'shadi)
   const [teams, setTeams] = useState<Team[]>(() => {
-    const stored = loadFromStorage<Team[]>(STORAGE_KEYS.teams, []);
-    return stored.length > 0 ? stored : INITIAL_TEAMS;
+    return loadFromStorage<Team[]>(STORAGE_KEYS.teams, []);
   });
 
   const [projects, setProjects] = useState<Project[]>(() => {
     const stored = loadFromStorage<Project[]>(STORAGE_KEYS.projects, []);
-    if (stored.length > 0) {
-      return stored.map(p => ({ ...p, history: p.history || [] }));
-    }
-    return INITIAL_PROJECTS.map(p => ({ ...p, history: p.history || [] }));
+    return stored.map(p => ({ ...p, history: p.history || [] }));
   });
 
   // Ma'lumotlar o'zgarganda localStorage'ga saqlash
@@ -348,12 +343,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }));
   };
 
-  // Barcha ma'lumotlarni tozalash (kerak bo'lsa)
+  // Barcha ma'lumotlarni tozalash
   const clearAllData = () => {
     localStorage.removeItem(STORAGE_KEYS.teams);
     localStorage.removeItem(STORAGE_KEYS.projects);
-    setTeams(INITIAL_TEAMS);
-    setProjects(INITIAL_PROJECTS.map(p => ({ ...p, history: p.history || [] })));
+    setTeams([]);
+    setProjects([]);
   };
 
   return (
