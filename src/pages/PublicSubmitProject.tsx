@@ -158,7 +158,7 @@ const PublicSubmitProject: React.FC = () => {
         isCustomDistrict: m.isCustomDistrict,
       }));
 
-      const newTeam = addTeam({
+      const newTeam = await addTeam({
         name: teamName,
         regionId,
         hackathonId: `hackathon-${regionId}`,
@@ -166,7 +166,7 @@ const PublicSubmitProject: React.FC = () => {
       });
 
       // Create project
-      addProject({
+      await addProject({
         title: projectTitle,
         description: projectDescription,
         category: projectCategory,

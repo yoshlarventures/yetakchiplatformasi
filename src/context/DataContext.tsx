@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Team, Project, ProjectStatus, ProjectHistoryItem, ProjectAttachment, TeamMember } from '../types';
+import { Team, Project, ProjectStatus, ProjectHistoryItem, ProjectAttachment } from '../types';
 import { supabase } from '../config/supabase';
 
 interface DataContextType {
@@ -49,6 +49,7 @@ const mapProjectFromDB = (row: any): Project => ({
   category: row.category,
   teamId: row.team_id,
   regionId: row.region_id,
+  hackathonId: row.hackathon_id || '',
   status: row.status,
   attachments: row.attachments || [],
   history: (row.history || []).map((h: any) => ({
@@ -224,6 +225,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       category: projectData.category,
       team_id: projectData.teamId,
       region_id: projectData.regionId,
+      hackathon_id: projectData.hackathonId,
       status: projectData.status || 'draft',
       attachments: projectData.attachments || [],
       history: [historyItem],
