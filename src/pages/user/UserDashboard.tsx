@@ -32,7 +32,15 @@ const UserDashboard: React.FC = () => {
 
   const regionProjects = getProjectsByRegion(regionId);
   const regionTeams = getTeamsByRegion(regionId);
-  const regionHackathon = HACKATHONS.find(h => h.regionId === regionId);
+
+  // Hakaton ma'lumotlarini real statistika bilan boyitish
+  const baseHackathon = HACKATHONS.find(h => h.regionId === regionId);
+  const regionHackathon = baseHackathon ? {
+    ...baseHackathon,
+    teamsCount: regionTeams.length,
+    projectsCount: regionProjects.length,
+    participantsCount: regionTeams.reduce((sum, t) => sum + t.members.length, 0),
+  } : null;
 
   const approvedProjects = regionProjects.filter(p => p.isApprovedByDirector);
   const pendingProjects = regionProjects.filter(p => ['submitted', 'presented'].includes(p.status));

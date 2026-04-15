@@ -27,7 +27,15 @@ const AdminRegions: React.FC = () => {
   const selectedRegion = REGIONS.find(r => r.id === selectedRegionId);
   const regionProjects = selectedRegionId ? projects.filter(p => p.regionId === selectedRegionId) : [];
   const regionTeams = selectedRegionId ? teams.filter(t => t.regionId === selectedRegionId) : [];
-  const regionHackathon = selectedRegionId ? HACKATHONS.find(h => h.regionId === selectedRegionId) : null;
+
+  // Hakaton ma'lumotlarini real statistika bilan boyitish
+  const baseHackathon = selectedRegionId ? HACKATHONS.find(h => h.regionId === selectedRegionId) : null;
+  const regionHackathon = baseHackathon ? {
+    ...baseHackathon,
+    teamsCount: regionTeams.length,
+    projectsCount: regionProjects.length,
+    participantsCount: regionTeams.reduce((sum, t) => sum + t.members.length, 0),
+  } : null;
 
   const getRegionStats = (regionId: string) => {
     const regionProjects = projects.filter(p => p.regionId === regionId);

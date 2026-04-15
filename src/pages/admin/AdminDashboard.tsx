@@ -74,12 +74,19 @@ const AdminDashboard: React.FC = () => {
     color: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#06b6d4'][idx],
   }));
 
-  // Hakatonlar statistikasi
-  const upcomingHackathons = HACKATHONS.filter(h => h.status === 'upcoming');
-  const ongoingHackathons = HACKATHONS.filter(h => h.status === 'ongoing');
-  const completedHackathons = HACKATHONS.filter(h => h.status === 'completed');
+  // Hakatonlarni real ma'lumotlar bilan boyitish
+  const hackathonsWithRealData = HACKATHONS.map(h => ({
+    ...h,
+    teamsCount: teams.filter(t => t.regionId === h.regionId).length,
+    projectsCount: projects.filter(p => p.regionId === h.regionId).length,
+    participantsCount: teams.filter(t => t.regionId === h.regionId).reduce((sum, t) => sum + t.members.length, 0),
+  }));
 
-  const selectedHackathonData = HACKATHONS.find(h => h.id === selectedHackathon);
+  const upcomingHackathons = hackathonsWithRealData.filter(h => h.status === 'upcoming');
+  const ongoingHackathons = hackathonsWithRealData.filter(h => h.status === 'ongoing');
+  const completedHackathons = hackathonsWithRealData.filter(h => h.status === 'completed');
+
+  const selectedHackathonData = hackathonsWithRealData.find(h => h.id === selectedHackathon);
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('uz-UZ', {
@@ -227,7 +234,7 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {HACKATHONS.slice(0, 8).map((hackathon) => {
+          {hackathonsWithRealData.slice(0, 8).map((hackathon) => {
             const region = REGIONS.find(r => r.id === hackathon.regionId);
             const statusColors = {
               upcoming: 'border-amber-200 bg-amber-50',

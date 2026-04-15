@@ -22,43 +22,12 @@ export const USERS: User[] = [
   })),
 ];
 
-// Hakaton sanalarini hisoblash
-const getHackathonDates = (index: number): { startDate: Date; endDate: Date; status: HackathonStatus } => {
+// Hakatonlar - hozircha statik, keyinchalik Supabase'dan olinadi
+export const HACKATHONS: Hackathon[] = REGIONS.map((region) => {
+  // Hozirgi oy uchun hakaton
   const now = new Date();
-  const currentMonth = now.getMonth();
-
-  // Har xil statuslar uchun
-  if (index < 4) {
-    // Yakunlangan - o'tgan oylarda
-    const month = (currentMonth - 2 - index + 12) % 12;
-    return {
-      startDate: new Date(2024, month, 10),
-      endDate: new Date(2024, month, 12),
-      status: 'completed' as HackathonStatus
-    };
-  } else if (index < 6) {
-    // Jarayonda - hozir
-    return {
-      startDate: new Date(now.getFullYear(), currentMonth, 1),
-      endDate: new Date(now.getFullYear(), currentMonth, 15),
-      status: 'ongoing' as HackathonStatus
-    };
-  } else {
-    // Rejalashtirilgan - kelgusi oylarda
-    const futureMonth = (currentMonth + (index - 5)) % 12;
-    return {
-      startDate: new Date(2025, futureMonth, 15),
-      endDate: new Date(2025, futureMonth, 17),
-      status: 'upcoming' as HackathonStatus
-    };
-  }
-};
-
-// Namunaviy hakatonlar
-export const HACKATHONS: Hackathon[] = REGIONS.map((region, index) => {
-  const { startDate, endDate, status } = getHackathonDates(index);
-  const participantsCount = Math.floor(Math.random() * 200) + 100;
-  const teamsCount = Math.floor(Math.random() * 30) + 10;
+  const startDate = new Date(now.getFullYear(), now.getMonth(), 15);
+  const endDate = new Date(now.getFullYear(), now.getMonth(), 17);
 
   return {
     id: `hackathon-${region.id}`,
@@ -68,13 +37,11 @@ export const HACKATHONS: Hackathon[] = REGIONS.map((region, index) => {
     endDate,
     location: region.districts[0]?.name || region.name,
     address: `${region.name}, ${region.districts[0]?.name || ''}, Markaziy maydon`,
-    description: `${region.name}da o'tkaziladigan yoshlar uchun innovatsion loyihalar tanlovi. Eng yaxshi g'oyalar moliyalashtiriladi.`,
-    status,
-    participantsCount,
-    teamsCount,
-    projectsCount: Math.floor(teamsCount * 0.8),
-    winnersCount: status === 'completed' ? Math.floor(teamsCount * 0.2) : undefined,
-    totalPrize: status === 'completed' ? [50000000, 75000000, 100000000][index % 3] : undefined,
+    description: `${region.name}da o'tkaziladigan yoshlar uchun innovatsion loyihalar tanlovi.`,
+    status: 'ongoing' as HackathonStatus,
+    participantsCount: 0, // Real data DataContext'dan olinadi
+    teamsCount: 0,
+    projectsCount: 0,
   };
 });
 
