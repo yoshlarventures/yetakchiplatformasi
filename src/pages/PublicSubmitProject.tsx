@@ -179,8 +179,9 @@ const PublicSubmitProject: React.FC = () => {
       });
 
       setIsSuccess(true);
-    } catch (err) {
-      alert('Xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+    } catch (err: any) {
+      console.error('Submit error:', err);
+      alert(`Xatolik: ${err?.message || err?.details || 'Noma\'lum xatolik'}. Qaytadan urinib ko\'ring.`);
     } finally {
       setIsSubmitting(false);
     }
