@@ -34,7 +34,7 @@ const UserTeams: React.FC = () => {
   // New team form state
   const [newTeamName, setNewTeamName] = useState('');
   const [newMembers, setNewMembers] = useState<Omit<TeamMember, 'id'>[]>([
-    { fullName: '', phone: '', mahallaId: '', mahallaName: '', districtId: '', districtName: '' }
+    { fullName: '', phone: '', mahallaId: '', mahallaName: '', districtId: '', districtName: '', isCustomDistrict: false }
   ]);
 
   // Project form state
@@ -54,13 +54,13 @@ const UserTeams: React.FC = () => {
 
   const resetNewTeamForm = () => {
     setNewTeamName('');
-    setNewMembers([{ fullName: '', phone: '', mahallaId: '', mahallaName: '', districtId: '', districtName: '' }]);
+    setNewMembers([{ fullName: '', phone: '', mahallaId: '', mahallaName: '', districtId: '', districtName: '', isCustomDistrict: false }]);
     setIsAddingTeam(false);
   };
 
   const addMemberField = () => {
     if (newMembers.length < 7) {
-      setNewMembers([...newMembers, { fullName: '', phone: '', mahallaId: '', mahallaName: '', districtId: '', districtName: '' }]);
+      setNewMembers([...newMembers, { fullName: '', phone: '', mahallaId: '', mahallaName: '', districtId: '', districtName: '', isCustomDistrict: false }]);
     }
   };
 
@@ -70,16 +70,29 @@ const UserTeams: React.FC = () => {
     }
   };
 
-  const updateMemberField = (index: number, field: keyof Omit<TeamMember, 'id'>, value: string) => {
+  const updateMemberField = (index: number, field: keyof Omit<TeamMember, 'id'>, value: string | boolean) => {
     const updated = [...newMembers];
     updated[index] = { ...updated[index], [field]: value };
 
     // Avtomatik tuman nomini to'ldirish
     if (field === 'districtId') {
-      const district = region?.districts.find(d => d.id === value);
-      if (district) {
-        updated[index].districtName = district.name;
+      if (value === 'custom') {
+        // Qo'lda kiritish tanlangan
+        updated[index].isCustomDistrict = true;
+        updated[index].districtName = '';
+      } else {
+        // Ro'yxatdan tanlangan
+        updated[index].isCustomDistrict = false;
+        const district = region?.districts.find(d => d.id === value);
+        if (district) {
+          updated[index].districtName = district.name;
+        }
       }
+    }
+
+    // Qo'lda kiritilgan tuman nomini districtName ga ham yozish
+    if (field === 'districtName' && updated[index].isCustomDistrict) {
+      // districtName allaqachon yangilangan
     }
 
     setNewMembers(updated);
@@ -91,7 +104,11 @@ const UserTeams: React.FC = () => {
       return;
     }
 
-    const validMembers = newMembers.filter(m => m.fullName.trim() && m.districtId);
+    const validMembers = newMembers.filter(m => {
+      if (!m.fullName.trim()) return false;
+      if (m.isCustomDistrict) return m.districtName?.trim();
+      return m.districtId;
+    });
     if (validMembers.length === 0) {
       alert('Kamida bitta a\'zo qo\'shing');
       return;
@@ -100,6 +117,7 @@ const UserTeams: React.FC = () => {
     const membersWithIds: TeamMember[] = validMembers.map((m, idx) => ({
       ...m,
       id: `member-${Date.now()}-${idx}`,
+      districtId: m.isCustomDistrict ? `custom-${Date.now()}-${idx}` : m.districtId,
       mahallaId: m.mahallaId || `mahalla-${Date.now()}-${idx}`,
     }));
 
@@ -372,16 +390,28 @@ const UserTeams: React.FC = () => {
                           onChange={(e) => updateMemberField(index, 'phone', e.target.value)}
                           className="input-field"
                         />
-                        <select
-                          value={member.districtId}
-                          onChange={(e) => updateMemberField(index, 'districtId', e.target.value)}
-                          className="input-field"
-                        >
-                          <option value="">Tuman/shahar tanlang *</option>
-                          {region?.districts.map(d => (
-                            <option key={d.id} value={d.id}>{d.name}</option>
-                          ))}
-                        </select>
+                        <div className="space-y-2">
+                          <select
+                            value={member.isCustomDistrict ? 'custom' : member.districtId}
+                            onChange={(e) => updateMemberField(index, 'districtId', e.target.value)}
+                            className="input-field"
+                          >
+                            <option value="">Tuman/shahar tanlang *</option>
+                            {region?.districts.map(d => (
+                              <option key={d.id} value={d.id}>{d.name}</option>
+                            ))}
+                            <option value="custom">✏️ Boshqa (qo'lda kiritish)</option>
+                          </select>
+                          {member.isCustomDistrict && (
+                            <input
+                              type="text"
+                              placeholder="Tuman/shahar nomini kiriting *"
+                              value={member.districtName}
+                              onChange={(e) => updateMemberField(index, 'districtName', e.target.value)}
+                              className="input-field border-amber-300 bg-amber-50 focus:ring-amber-500"
+                            />
+                          )}
+                        </div>
                         <input
                           type="text"
                           placeholder="Mahalla nomi"
@@ -571,7 +601,12 @@ const UserTeams: React.FC = () => {
                               {member.mahallaName && (
                                 <p className="text-sm text-emerald-600 mt-1">{member.mahallaName}</p>
                               )}
-                              <p className="text-xs text-gray-500">{member.districtName}</p>
+                              <p className="text-xs text-gray-500 flex items-center gap-1">
+                                {member.districtName}
+                                {member.isCustomDistrict && (
+                                  <span className="text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded text-[10px]">qo'lda kiritilgan</span>
+                                )}
+                              </p>
                               {member.phone && (
                                 <p className="text-sm text-gray-600 flex items-center gap-1 mt-2">
                                   <Phone className="w-4 h-4" />

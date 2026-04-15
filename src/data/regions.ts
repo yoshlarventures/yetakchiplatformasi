@@ -188,7 +188,7 @@ export const REGIONS: Region[] = [
       { id: 'qamashi', name: 'Qamashi tumani', regionId: 'qashqadaryo' },
       { id: 'qarshi-t', name: 'Qarshi tumani', regionId: 'qashqadaryo' },
       { id: 'yakkabog', name: 'Yakkabog\' tumani', regionId: 'qashqadaryo' },
-      { id: 'koson', name: 'Ko\'kdala tumani', regionId: 'qashqadaryo' },
+      { id: 'kokdala', name: 'Ko\'kdala tumani', regionId: 'qashqadaryo' },
     ]
   },
   {

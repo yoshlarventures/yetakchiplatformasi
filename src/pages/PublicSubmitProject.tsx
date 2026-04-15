@@ -26,6 +26,8 @@ interface MemberInput {
   districtId: string;
   districtName: string;
   mahallaName: string;
+  isCustomDistrict?: boolean;
+  customDistrictName?: string;
 }
 
 const PublicSubmitProject: React.FC = () => {
@@ -60,15 +62,29 @@ const PublicSubmitProject: React.FC = () => {
     }
   };
 
-  const updateMember = (index: number, field: keyof MemberInput, value: string) => {
+  const updateMember = (index: number, field: keyof MemberInput, value: string | boolean) => {
     const updated = [...members];
     updated[index] = { ...updated[index], [field]: value };
 
     if (field === 'districtId' && selectedRegion) {
-      const district = selectedRegion.districts.find(d => d.id === value);
-      if (district) {
-        updated[index].districtName = district.name;
+      if (value === 'custom') {
+        // Qo'lda kiritish tanlangan
+        updated[index].isCustomDistrict = true;
+        updated[index].districtName = '';
+        updated[index].customDistrictName = '';
+      } else {
+        // Ro'yxatdan tanlangan
+        updated[index].isCustomDistrict = false;
+        const district = selectedRegion.districts.find(d => d.id === value);
+        if (district) {
+          updated[index].districtName = district.name;
+        }
       }
+    }
+
+    // Qo'lda kiritilgan tuman nomini districtName ga ham yozish
+    if (field === 'customDistrictName') {
+      updated[index].districtName = value as string;
     }
 
     setMembers(updated);
@@ -81,7 +97,13 @@ const PublicSubmitProject: React.FC = () => {
   };
 
   const validateStep2 = () => {
-    const validMembers = members.filter(m => m.fullName.trim() && m.districtId);
+    const validMembers = members.filter(m => {
+      if (!m.fullName.trim()) return false;
+      if (m.isCustomDistrict) {
+        return m.customDistrictName?.trim();
+      }
+      return m.districtId;
+    });
     if (validMembers.length === 0) return 'Kamida bitta jamoa a\'zosini kiriting';
     return null;
   };
@@ -120,15 +142,20 @@ const PublicSubmitProject: React.FC = () => {
 
     try {
       // Create team
-      const validMembers = members.filter(m => m.fullName.trim() && m.districtId);
+      const validMembers = members.filter(m => {
+        if (!m.fullName.trim()) return false;
+        if (m.isCustomDistrict) return m.customDistrictName?.trim();
+        return m.districtId;
+      });
       const teamMembers = validMembers.map((m, idx) => ({
         id: `member-public-${Date.now()}-${idx}`,
         fullName: m.fullName,
         phone: m.phone,
-        districtId: m.districtId,
-        districtName: m.districtName,
+        districtId: m.isCustomDistrict ? `custom-${Date.now()}-${idx}` : m.districtId,
+        districtName: m.isCustomDistrict ? (m.customDistrictName || '') : m.districtName,
         mahallaId: `mahalla-public-${Date.now()}-${idx}`,
         mahallaName: m.mahallaName,
+        isCustomDistrict: m.isCustomDistrict,
       }));
 
       const newTeam = addTeam({
@@ -325,16 +352,28 @@ const PublicSubmitProject: React.FC = () => {
                         onChange={(e) => updateMember(index, 'phone', e.target.value)}
                         className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
                       />
-                      <select
-                        value={member.districtId}
-                        onChange={(e) => updateMember(index, 'districtId', e.target.value)}
-                        className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
-                      >
-                        <option value="">Tuman/shahar *</option>
-                        {selectedRegion?.districts.map(d => (
-                          <option key={d.id} value={d.id}>{d.name}</option>
-                        ))}
-                      </select>
+                      <div className="space-y-2">
+                        <select
+                          value={member.isCustomDistrict ? 'custom' : member.districtId}
+                          onChange={(e) => updateMember(index, 'districtId', e.target.value)}
+                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                        >
+                          <option value="">Tuman/shahar *</option>
+                          {selectedRegion?.districts.map(d => (
+                            <option key={d.id} value={d.id}>{d.name}</option>
+                          ))}
+                          <option value="custom">✏️ Boshqa (qo'lda kiritish)</option>
+                        </select>
+                        {member.isCustomDistrict && (
+                          <input
+                            type="text"
+                            placeholder="Tuman/shahar nomini kiriting *"
+                            value={member.customDistrictName || ''}
+                            onChange={(e) => updateMember(index, 'customDistrictName', e.target.value)}
+                            className="w-full px-4 py-2.5 border border-amber-300 bg-amber-50 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none"
+                          />
+                        )}
+                      </div>
                       <input
                         type="text"
                         placeholder="Mahalla nomi"
@@ -449,11 +488,19 @@ const PublicSubmitProject: React.FC = () => {
                 <div className="bg-purple-50 rounded-xl p-4">
                   <p className="text-xs text-purple-600 mb-1">Jamoa</p>
                   <p className="font-semibold text-purple-900">{teamName}</p>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-2 space-y-2">
                     {members.filter(m => m.fullName).map((m, i) => (
-                      <span key={i} className="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded">
-                        {m.fullName}
-                      </span>
+                      <div key={i} className="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded">
+                        <span className="font-medium">{m.fullName}</span>
+                        {m.districtName && (
+                          <span className="text-purple-600 ml-1">
+                            - {m.districtName}
+                            {m.isCustomDistrict && (
+                              <span className="text-amber-600 bg-amber-100 px-1 ml-1 rounded text-[10px]">qo'lda</span>
+                            )}
+                          </span>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>

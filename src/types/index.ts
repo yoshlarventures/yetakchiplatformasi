@@ -41,6 +41,7 @@ export interface TeamMember {
   mahallaName: string;
   districtId: string;
   districtName: string;
+  isCustomDistrict?: boolean; // Qo'lda kiritilgan tuman/shahar
 }
 
 // Jamoa
