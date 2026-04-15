@@ -374,7 +374,7 @@ const UserProjects: React.FC = () => {
                         <div className="bg-green-50 rounded-xl p-5 space-y-3">
                           <div className="flex items-center gap-2 text-green-700 font-semibold">
                             <CheckCircle className="w-5 h-5" />
-                            Direktor tomonidan maqullangan
+                            Maqullangan
                           </div>
                           {selectedProject.approvalNotes && (
                             <p className="text-green-700 text-sm">{selectedProject.approvalNotes}</p>
@@ -466,36 +466,36 @@ const UserProjects: React.FC = () => {
                   )}
 
                   {/* Taqdimot qilish */}
-                  {selectedProject.status === 'submitted' && (
+                  {selectedProject.status === 'submitted' && user?.role === 'regional_leader' && (
                     <button
                       onClick={handlePresent}
                       className="w-full py-4 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 flex items-center justify-center gap-2"
                     >
                       <Presentation className="w-5 h-5" />
-                      Direktorga taqdimot qilish
+                      Ko'rib chiqishga olish
                     </button>
                   )}
 
-                  {/* Viloyat yetakchisi uchun - taqdimotdan keyin kutish */}
-                  {selectedProject.status === 'presented' && user?.role === 'regional_leader' && (
-                    <div className="bg-purple-50 rounded-xl p-6 text-center space-y-3">
-                      <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
-                        <Presentation className="w-8 h-8 text-purple-600" />
-                      </div>
-                      <h3 className="font-semibold text-purple-800 text-lg">
-                        Taqdimot qilindi
-                      </h3>
-                      <p className="text-purple-600">
-                        Loyiha direktorga taqdimot qilindi. Direktor Alisher Sadullayev javobini kutmoqdasiz.
-                      </p>
-                      <p className="text-sm text-purple-500">
-                        Direktor loyihani maqullaydi, rad etadi yoki qayta ishlashga yuboradi.
-                      </p>
+                  {/* Admin uchun - submitted ko'rish */}
+                  {selectedProject.status === 'submitted' && user?.role === 'admin' && (
+                    <div className="bg-blue-50 rounded-xl p-6 text-center space-y-3">
+                      <Send className="w-12 h-12 text-blue-600 mx-auto" />
+                      <p className="text-blue-700 font-medium">Loyiha yuborilgan</p>
+                      <p className="text-sm text-blue-600">Viloyat yetakchisi ko'rib chiqadi</p>
                     </div>
                   )}
 
-                  {/* Admin/Direktor uchun - maqullash formasi */}
+                  {/* Admin uchun - taqdimot ko'rish (faqat kuzatuvchi) */}
                   {selectedProject.status === 'presented' && user?.role === 'admin' && (
+                    <div className="bg-purple-50 rounded-xl p-6 text-center space-y-3">
+                      <Presentation className="w-12 h-12 text-purple-600 mx-auto" />
+                      <p className="text-purple-700 font-medium">Bu loyiha taqdimot qilindi</p>
+                      <p className="text-sm text-purple-600">Viloyat yetakchisi qaror kutmoqda</p>
+                    </div>
+                  )}
+
+                  {/* Viloyat yetakchisi uchun - taqdimotdan keyin qaror qilish */}
+                  {selectedProject.status === 'presented' && user?.role === 'regional_leader' && (
                     <div className="space-y-4">
                       <div className="bg-green-50 rounded-xl p-5 space-y-4">
                         <h3 className="font-semibold text-green-800 flex items-center gap-2">
@@ -602,14 +602,14 @@ const UserProjects: React.FC = () => {
                             <CheckCircle className="w-6 h-6 text-green-600" />
                           </div>
                           <div>
-                            <h3 className="font-bold text-green-800 text-lg">Tabriklaymiz!</h3>
-                            <p className="text-green-600">Loyihangiz direktor tomonidan maqullandi</p>
+                            <h3 className="font-bold text-green-800 text-lg">Maqullangan!</h3>
+                            <p className="text-green-600">Loyiha maqullandi va amalga oshirishga tayyor</p>
                           </div>
                         </div>
 
                         {selectedProject.approvalNotes && (
                           <div className="bg-white rounded-lg p-4 border border-green-200">
-                            <p className="text-sm text-green-600 mb-1">Direktor izohi:</p>
+                            <p className="text-sm text-green-600 mb-1">Izoh:</p>
                             <p className="text-green-800">{selectedProject.approvalNotes}</p>
                           </div>
                         )}
@@ -650,15 +650,15 @@ const UserProjects: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Admin uchun - ishni boshlash */}
+                  {/* Admin uchun - faqat kuzatuvchi */}
                   {selectedProject.status === 'approved' && user?.role === 'admin' && (
-                    <button
-                      onClick={handleStart}
-                      className="w-full py-4 bg-cyan-600 text-white rounded-xl font-medium hover:bg-cyan-700 flex items-center justify-center gap-2"
-                    >
-                      <Play className="w-5 h-5" />
-                      Ishni boshlash
-                    </button>
+                    <div className="bg-green-50 rounded-xl p-6 text-center space-y-3">
+                      <CheckCircle className="w-12 h-12 text-green-600 mx-auto" />
+                      <p className="text-green-700 font-medium">Bu loyiha maqullangan</p>
+                      {selectedProject.allocatedBudget && (
+                        <p className="text-green-600">Ajratilgan: {(selectedProject.allocatedBudget / 1000000).toFixed(0)} mln so'm</p>
+                      )}
+                    </div>
                   )}
 
                   {/* Viloyat yetakchisi uchun - rad etilgan */}
@@ -670,7 +670,7 @@ const UserProjects: React.FC = () => {
                         </div>
                         <div>
                           <h3 className="font-bold text-red-800 text-lg">Loyiha rad etildi</h3>
-                          <p className="text-red-600">Afsuski, direktor loyihani maqullamadi</p>
+                          <p className="text-red-600">Bu loyiha rad etilgan</p>
                         </div>
                       </div>
 
@@ -697,13 +697,13 @@ const UserProjects: React.FC = () => {
                           </div>
                           <div>
                             <h3 className="font-bold text-orange-800 text-lg">Qayta ishlash kerak</h3>
-                            <p className="text-orange-600">Direktor loyihani qayta ko'rib chiqishni so'radi</p>
+                            <p className="text-orange-600">Loyihani tuzatib qayta yuborish kerak</p>
                           </div>
                         </div>
 
                         {selectedProject.revisionNotes && (
                           <div className="bg-white rounded-lg p-4 border border-orange-200">
-                            <p className="text-sm text-orange-600 mb-1">Direktor ko'rsatmalari:</p>
+                            <p className="text-sm text-orange-600 mb-1">Ko'rsatmalar:</p>
                             <p className="text-orange-800 font-medium">{selectedProject.revisionNotes}</p>
                           </div>
                         )}
@@ -737,19 +737,10 @@ const UserProjects: React.FC = () => {
 
                   {selectedProject.status === 'revision' && user?.role === 'admin' && (
                     <div className="bg-orange-50 rounded-xl p-6 text-center space-y-3">
-                      <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto">
-                        <AlertCircle className="w-8 h-8 text-orange-600" />
-                      </div>
-                      <h3 className="font-semibold text-orange-800 text-lg">
-                        Qayta ishlashga yuborilgan
-                      </h3>
-                      <p className="text-orange-600">
-                        Loyiha viloyat yetakchisiga qayta ishlash uchun yuborildi.
-                      </p>
+                      <AlertCircle className="w-12 h-12 text-orange-600 mx-auto" />
+                      <p className="text-orange-700 font-medium">Qayta ishlash kerak</p>
                       {selectedProject.revisionNotes && (
-                        <p className="text-sm text-orange-700 bg-white rounded-lg p-3 border border-orange-200">
-                          <strong>Ko'rsatma:</strong> {selectedProject.revisionNotes}
-                        </p>
+                        <p className="text-sm text-orange-600">{selectedProject.revisionNotes}</p>
                       )}
                     </div>
                   )}
