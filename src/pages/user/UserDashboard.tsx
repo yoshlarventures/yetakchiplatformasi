@@ -92,18 +92,18 @@ const UserDashboard: React.FC = () => {
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{region?.name}</h1>
-          <p className="text-gray-500 mt-1 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{region?.name}</h1>
+          <p className="text-gray-500 text-sm mt-1 flex items-center gap-2">
             <MapPin className="w-4 h-4" />
             {region?.districts.length} ta tuman/shahar
           </p>
         </div>
         {totalBudget > 0 && (
-          <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-3 rounded-xl">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 sm:px-5 sm:py-3 rounded-xl self-start sm:self-auto">
             <p className="text-xs opacity-90">Jami ajratilgan</p>
-            <p className="text-xl font-bold">{(totalBudget / 1000000).toFixed(0)} mln so'm</p>
+            <p className="text-lg sm:text-xl font-bold">{(totalBudget / 1000000).toFixed(0)} mln so'm</p>
           </div>
         )}
       </div>
@@ -160,37 +160,37 @@ const UserDashboard: React.FC = () => {
       {regionHackathon && (
         <div
           onClick={() => setShowHackathonModal(true)}
-          className={`bg-gradient-to-r ${hackathonStatusConfig[regionHackathon.status].bg} text-white rounded-xl p-6 cursor-pointer hover:shadow-lg transition-shadow`}
+          className={`bg-gradient-to-r ${hackathonStatusConfig[regionHackathon.status].bg} text-white rounded-xl p-4 sm:p-6 cursor-pointer hover:shadow-lg transition-shadow`}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                <Calendar className="w-7 h-7" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Calendar className="w-6 h-6 sm:w-7 sm:h-7" />
               </div>
               <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h2 className="text-lg font-bold">Yoshlar Ventures Hakatoni</h2>
+                <div className="flex flex-wrap items-center gap-2 mb-1">
+                  <h2 className="text-base sm:text-lg font-bold">Yoshlar Ventures</h2>
                   <span className="px-2 py-0.5 bg-white/20 rounded text-xs">
                     {hackathonStatusConfig[regionHackathon.status].label}
                   </span>
                 </div>
-                <p className="text-sm opacity-90">
+                <p className="text-xs sm:text-sm opacity-90">
                   {formatDate(regionHackathon.startDate)} - {formatDate(regionHackathon.endDate)}
                 </p>
               </div>
             </div>
-            <div className="hidden md:grid grid-cols-3 gap-6">
-              <div className="text-center">
-                <p className="text-2xl font-bold">{regionHackathon.participantsCount}</p>
-                <p className="text-xs opacity-80">Ishtirokchilar</p>
+            <div className="grid grid-cols-3 gap-3 sm:gap-6">
+              <div className="text-center bg-white/10 rounded-lg py-2 px-3">
+                <p className="text-xl sm:text-2xl font-bold">{regionHackathon.participantsCount}</p>
+                <p className="text-[10px] sm:text-xs opacity-80">Ishtirok</p>
               </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold">{regionHackathon.teamsCount}</p>
-                <p className="text-xs opacity-80">Jamoalar</p>
+              <div className="text-center bg-white/10 rounded-lg py-2 px-3">
+                <p className="text-xl sm:text-2xl font-bold">{regionHackathon.teamsCount}</p>
+                <p className="text-[10px] sm:text-xs opacity-80">Jamoa</p>
               </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold">{regionHackathon.projectsCount}</p>
-                <p className="text-xs opacity-80">Loyihalar</p>
+              <div className="text-center bg-white/10 rounded-lg py-2 px-3">
+                <p className="text-xl sm:text-2xl font-bold">{regionHackathon.projectsCount}</p>
+                <p className="text-[10px] sm:text-xs opacity-80">Loyiha</p>
               </div>
             </div>
           </div>
@@ -198,10 +198,10 @@ const UserDashboard: React.FC = () => {
       )}
 
       {/* Charts and Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Status Chart */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+          <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-sm sm:text-base">
             <TrendingUp className="w-5 h-5 text-emerald-600" />
             Loyiha holati
           </h3>
@@ -225,8 +225,8 @@ const UserDashboard: React.FC = () => {
         </div>
 
         {/* Progress Section */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Loyihalar jarayoni</h3>
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+          <h3 className="font-semibold text-gray-900 mb-4 text-sm sm:text-base">Loyihalar jarayoni</h3>
           <div className="space-y-4">
             <ProgressBar
               label="Maqullangan"
@@ -256,8 +256,8 @@ const UserDashboard: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Tezkor amallar</h3>
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 md:col-span-2 lg:col-span-1">
+          <h3 className="font-semibold text-gray-900 mb-4 text-sm sm:text-base">Tezkor amallar</h3>
           <div className="space-y-3">
             <Link
               to="/dashboard/teams"
@@ -290,11 +290,11 @@ const UserDashboard: React.FC = () => {
       </div>
 
       {/* Projects and Teams */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Projects */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900">Oxirgi loyihalar</h2>
+            <h2 className="font-semibold text-gray-900 text-sm sm:text-base">Oxirgi loyihalar</h2>
             <Link
               to="/dashboard/projects"
               className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-1"
@@ -332,9 +332,9 @@ const UserDashboard: React.FC = () => {
         </div>
 
         {/* Teams */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900">Jamoalar</h2>
+            <h2 className="font-semibold text-gray-900 text-sm sm:text-base">Jamoalar</h2>
             <Link
               to="/dashboard/teams"
               className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-1"

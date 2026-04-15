@@ -13,9 +13,15 @@ import {
   Eye,
   BookOpen,
   ChevronRight,
+  X,
 } from 'lucide-react';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,6 +29,13 @@ const Sidebar: React.FC = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleNavClick = () => {
+    // Mobilda navigatsiya qilganda sidebar'ni yopish
+    if (window.innerWidth < 1024) {
+      onClose();
+    }
   };
 
   const region = user?.regionId ? REGIONS.find(r => r.id === user.regionId) : null;
@@ -43,103 +56,133 @@ const Sidebar: React.FC = () => {
   const links = isAdmin ? adminLinks : userLinks;
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
-      {/* Logo */}
-      <div className="p-6 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-            isAdmin ? 'bg-indigo-600' : 'bg-emerald-600'
-          }`}>
-            {isAdmin ? (
-              <Shield className="w-5 h-5 text-white" />
-            ) : (
-              <Users className="w-5 h-5 text-white" />
-            )}
-          </div>
-          <div>
-            <h2 className="font-bold text-gray-900">
-              {isAdmin ? 'Admin Panel' : 'Yetakchi'}
-            </h2>
-            <p className="text-xs text-gray-500">
-              {isAdmin ? 'Kuzatuv tizimi' : region?.name || 'Hudud'}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Observer Badge for Admin */}
-      {isAdmin && (
-        <div className="mx-4 mt-4 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center gap-2 text-blue-700 text-sm">
-            <Eye className="w-4 h-4" />
-            <span className="font-medium">Kuzatuv rejimi</span>
-          </div>
-          <p className="text-xs text-blue-600 mt-1">
-            Faqat ko'rish mumkin
-          </p>
-        </div>
+    <>
+      {/* Overlay - mobilda sidebar ochiq bo'lganda */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
       )}
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4 overflow-y-auto">
-        <ul className="space-y-1">
-          {links.map((link) => (
-            <li key={link.to}>
-              <NavLink
-                to={link.to}
-                end={link.to === '/admin' || link.to === '/dashboard'}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? isAdmin
-                        ? 'bg-indigo-50 text-indigo-600'
-                        : 'bg-emerald-50 text-emerald-600'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`
-                }
-              >
-                <link.icon className="w-5 h-5" />
-                <span className="font-medium">{link.label}</span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      {/* Sidebar */}
+      <aside className={`
+        fixed lg:static inset-y-0 left-0 z-50
+        w-72 lg:w-64 bg-white border-r border-gray-200
+        flex flex-col
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        {/* Logo */}
+        <div className="p-4 lg:p-6 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                isAdmin ? 'bg-indigo-600' : 'bg-emerald-600'
+              }`}>
+                {isAdmin ? (
+                  <Shield className="w-5 h-5 text-white" />
+                ) : (
+                  <Users className="w-5 h-5 text-white" />
+                )}
+              </div>
+              <div>
+                <h2 className="font-bold text-gray-900">
+                  {isAdmin ? 'Admin Panel' : 'Yetakchi'}
+                </h2>
+                <p className="text-xs text-gray-500">
+                  {isAdmin ? 'Kuzatuv tizimi' : region?.name || 'Hudud'}
+                </p>
+              </div>
+            </div>
+            {/* Yopish tugmasi - faqat mobilda */}
+            <button
+              onClick={onClose}
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
+        </div>
 
-      {/* User info & Logout */}
-      <div className="p-4 border-t border-gray-100">
-        {/* Profile Link */}
-        <button
-          onClick={() => navigate(isAdmin ? '/admin/profile' : '/dashboard/profile')}
-          className={`flex items-center gap-3 w-full px-4 py-3 rounded-lg mb-2 transition-all duration-200 ${
-            location.pathname.includes('/profile')
-              ? isAdmin
-                ? 'bg-indigo-50 text-indigo-600'
-                : 'bg-emerald-50 text-emerald-600'
-              : 'bg-gray-50 hover:bg-gray-100'
-          }`}
-        >
-          <UserCircle className={`w-10 h-10 ${location.pathname.includes('/profile') ? '' : 'text-gray-400'}`} />
-          <div className="flex-1 min-w-0 text-left">
-            <p className={`text-sm font-medium truncate ${location.pathname.includes('/profile') ? '' : 'text-gray-900'}`}>
-              {user?.fullName}
-            </p>
-            <p className={`text-xs truncate flex items-center gap-1 ${location.pathname.includes('/profile') ? 'opacity-80' : 'text-gray-500'}`}>
-              <BookOpen className="w-3 h-3" />
-              Profil & Yo'riqnoma
+        {/* Observer Badge for Admin */}
+        {isAdmin && (
+          <div className="mx-4 mt-4 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center gap-2 text-blue-700 text-sm">
+              <Eye className="w-4 h-4" />
+              <span className="font-medium">Kuzatuv rejimi</span>
+            </div>
+            <p className="text-xs text-blue-600 mt-1">
+              Faqat ko'rish mumkin
             </p>
           </div>
-          <ChevronRight className={`w-4 h-4 ${location.pathname.includes('/profile') ? '' : 'text-gray-400'}`} />
-        </button>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-4 py-3 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-        >
-          <LogOut className="w-5 h-5" />
-          <span className="font-medium">Chiqish</span>
-        </button>
-      </div>
-    </aside>
+        )}
+
+        {/* Navigation */}
+        <nav className="flex-1 p-4 overflow-y-auto">
+          <ul className="space-y-1">
+            {links.map((link) => (
+              <li key={link.to}>
+                <NavLink
+                  to={link.to}
+                  end={link.to === '/admin' || link.to === '/dashboard'}
+                  onClick={handleNavClick}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? isAdmin
+                          ? 'bg-indigo-50 text-indigo-600'
+                          : 'bg-emerald-50 text-emerald-600'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`
+                  }
+                >
+                  <link.icon className="w-5 h-5" />
+                  <span className="font-medium">{link.label}</span>
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* User info & Logout */}
+        <div className="p-4 border-t border-gray-100">
+          {/* Profile Link */}
+          <button
+            onClick={() => {
+              navigate(isAdmin ? '/admin/profile' : '/dashboard/profile');
+              handleNavClick();
+            }}
+            className={`flex items-center gap-3 w-full px-4 py-3 rounded-lg mb-2 transition-all duration-200 ${
+              location.pathname.includes('/profile')
+                ? isAdmin
+                  ? 'bg-indigo-50 text-indigo-600'
+                  : 'bg-emerald-50 text-emerald-600'
+                : 'bg-gray-50 hover:bg-gray-100'
+            }`}
+          >
+            <UserCircle className={`w-10 h-10 ${location.pathname.includes('/profile') ? '' : 'text-gray-400'}`} />
+            <div className="flex-1 min-w-0 text-left">
+              <p className={`text-sm font-medium truncate ${location.pathname.includes('/profile') ? '' : 'text-gray-900'}`}>
+                {user?.fullName}
+              </p>
+              <p className={`text-xs truncate flex items-center gap-1 ${location.pathname.includes('/profile') ? 'opacity-80' : 'text-gray-500'}`}>
+                <BookOpen className="w-3 h-3" />
+                Profil & Yo'riqnoma
+              </p>
+            </div>
+            <ChevronRight className={`w-4 h-4 ${location.pathname.includes('/profile') ? '' : 'text-gray-400'}`} />
+          </button>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 w-full px-4 py-3 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Chiqish</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
 

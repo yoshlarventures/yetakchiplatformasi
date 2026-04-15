@@ -99,12 +99,12 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Monitoring paneli</h1>
-          <p className="text-gray-500 mt-1">Yoshlar Ventures platformasi statistikasi</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Monitoring paneli</h1>
+          <p className="text-gray-500 text-sm sm:text-base mt-1">Yoshlar Ventures statistikasi</p>
         </div>
-        <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2">
+        <div className="bg-blue-50 text-blue-700 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 self-start sm:self-auto">
           <TrendingUp className="w-4 h-4" />
           Kuzatuv rejimi
         </div>
@@ -181,15 +181,15 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Status Donut Chart */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Loyiha statuslari</h3>
-          <div className="flex items-center justify-center gap-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+          <h3 className="font-semibold text-gray-900 mb-4 text-sm sm:text-base">Loyiha statuslari</h3>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
             <DonutChart
               data={statusChartData}
-              size={140}
-              thickness={20}
+              size={120}
+              thickness={18}
               centerValue={projects.length}
               centerLabel="Jami"
             />
@@ -198,29 +198,29 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Category Bar Chart */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Kategoriyalar bo'yicha</h3>
-          <BarChart data={categoryData} height={180} />
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+          <h3 className="font-semibold text-gray-900 mb-4 text-sm sm:text-base">Kategoriyalar</h3>
+          <BarChart data={categoryData} height={160} />
         </div>
 
         {/* Top Regions */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Top 5 viloyat</h3>
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 md:col-span-2 lg:col-span-1">
+          <h3 className="font-semibold text-gray-900 mb-4 text-sm sm:text-base">Top 5 viloyat</h3>
           <HorizontalBarChart data={topRegionsData} />
         </div>
       </div>
 
       {/* Hackathons Section */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
             <Calendar className="w-5 h-5 text-indigo-600" />
             Hakatonlar
           </h2>
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm">
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-              Rejalashtirilgan: {upcomingHackathons.length}
+              Reja: {upcomingHackathons.length}
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-green-500"></span>
@@ -233,7 +233,7 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
           {hackathonsWithRealData.slice(0, 8).map((hackathon) => {
             const region = REGIONS.find(r => r.id === hackathon.regionId);
             const statusColors = {
