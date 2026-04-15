@@ -154,25 +154,25 @@ const ProfilePage: React.FC = () => {
     <div className="space-y-6 animate-fadeIn">
       {/* Profile Header */}
       <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-        <div className={`h-24 ${isAdmin ? 'bg-gradient-to-r from-indigo-500 to-purple-600' : 'bg-gradient-to-r from-emerald-500 to-teal-600'}`} />
-        <div className="px-6 pb-6">
-          <div className="flex items-end gap-4 -mt-10">
-            <div className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg ${isAdmin ? 'bg-indigo-600' : 'bg-emerald-600'}`}>
+        <div className={`h-20 sm:h-24 ${isAdmin ? 'bg-gradient-to-r from-indigo-500 to-purple-600' : 'bg-gradient-to-r from-emerald-500 to-teal-600'}`} />
+        <div className="px-4 sm:px-6 pb-5 sm:pb-6">
+          <div className="flex items-end gap-3 sm:gap-4 -mt-8 sm:-mt-10">
+            <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg ${isAdmin ? 'bg-indigo-600' : 'bg-emerald-600'}`}>
               {isAdmin ? (
-                <Shield className="w-10 h-10 text-white" />
+                <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               ) : (
-                <User className="w-10 h-10 text-white" />
+                <User className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               )}
             </div>
-            <div className="pb-2">
-              <h1 className="text-xl font-bold text-gray-900">{user?.fullName}</h1>
+            <div className="pb-1 sm:pb-2">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900">{user?.fullName}</h1>
               <p className={`text-sm ${isAdmin ? 'text-indigo-600' : 'text-emerald-600'}`}>
                 {isAdmin ? 'Administrator' : 'Viloyat Yetakchisi'}
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-5 sm:mt-6">
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
               <Mail className="w-5 h-5 text-gray-400" />
               <div>
@@ -201,7 +201,7 @@ const ProfilePage: React.FC = () => {
       </div>
 
       {/* Instructions */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6">
+      <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isAdmin ? 'bg-indigo-100' : 'bg-emerald-100'}`}>
             <BookOpen className={`w-5 h-5 ${isAdmin ? 'text-indigo-600' : 'text-emerald-600'}`} />
@@ -255,7 +255,7 @@ const ProfilePage: React.FC = () => {
 
                 {isExpanded && (
                   <div className="px-4 pb-4 animate-fadeIn">
-                    <div className="ml-14 space-y-2">
+                    <div className="ml-4 sm:ml-14 space-y-2">
                       {step.details.map((detail, idx) => (
                         <div key={idx} className="flex items-start gap-2">
                           <ArrowRight className={`w-4 h-4 mt-0.5 flex-shrink-0 ${colors.text}`} />
@@ -272,7 +272,7 @@ const ProfilePage: React.FC = () => {
       </div>
 
       {/* Tips */}
-      <div className={`rounded-2xl p-6 ${isAdmin ? 'bg-indigo-50 border border-indigo-200' : 'bg-emerald-50 border border-emerald-200'}`}>
+      <div className={`rounded-2xl p-4 sm:p-6 ${isAdmin ? 'bg-indigo-50 border border-indigo-200' : 'bg-emerald-50 border border-emerald-200'}`}>
         <div className="flex items-start gap-4">
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${isAdmin ? 'bg-indigo-200' : 'bg-emerald-200'}`}>
             <Lightbulb className={`w-5 h-5 ${isAdmin ? 'text-indigo-600' : 'text-emerald-600'}`} />
@@ -302,7 +302,7 @@ const ProfilePage: React.FC = () => {
 
       {/* Quick Stats for Leaders */}
       {!isAdmin && (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
           <div className="bg-white rounded-xl p-4 border border-gray-200 text-center">
             <Target className="w-8 h-8 text-blue-500 mx-auto mb-2" />
             <p className="text-2xl font-bold text-gray-900">5</p>

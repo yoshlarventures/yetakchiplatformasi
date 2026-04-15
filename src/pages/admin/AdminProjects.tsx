@@ -88,12 +88,12 @@ const AdminProjects: React.FC = () => {
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Loyihalar monitoring</h1>
-          <p className="text-gray-500 mt-1">Barcha hududlardan kelgan loyihalarni kuzatish</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Loyihalar monitoring</h1>
+          <p className="text-sm text-gray-500 mt-1">Barcha hududlardan kelgan loyihalarni kuzatish</p>
         </div>
-        <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-sm font-medium">
+        <div className="bg-blue-50 text-blue-700 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium self-start sm:self-auto">
           Kuzatuv rejimi
         </div>
       </div>
@@ -124,8 +124,8 @@ const AdminProjects: React.FC = () => {
 
       {/* Filters */}
       <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <div className="flex flex-wrap gap-4">
-          <div className="flex-1 min-w-[200px]">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -138,31 +138,33 @@ const AdminProjects: React.FC = () => {
             </div>
           </div>
 
-          <div className="relative">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="appearance-none pl-4 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none bg-white min-w-[160px]"
-            >
-              {statusOptions.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-          </div>
+          <div className="flex gap-3">
+            <div className="relative flex-1 sm:flex-none">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full appearance-none pl-4 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none bg-white sm:min-w-[160px]"
+              >
+                {statusOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            </div>
 
-          <div className="relative">
-            <select
-              value={regionFilter}
-              onChange={(e) => setRegionFilter(e.target.value)}
-              className="appearance-none pl-4 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none bg-white min-w-[180px]"
-            >
-              <option value="all">Barcha hududlar</option>
-              {REGIONS.map(region => (
-                <option key={region.id} value={region.id}>{region.name}</option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            <div className="relative flex-1 sm:flex-none">
+              <select
+                value={regionFilter}
+                onChange={(e) => setRegionFilter(e.target.value)}
+                className="w-full appearance-none pl-4 pr-10 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none bg-white sm:min-w-[180px]"
+              >
+                <option value="all">Barcha hududlar</option>
+                {REGIONS.map(region => (
+                  <option key={region.id} value={region.id}>{region.name}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            </div>
           </div>
         </div>
       </div>
@@ -228,8 +230,8 @@ const AdminProjects: React.FC = () => {
 
       {/* Project Detail Modal - View Only */}
       {selectedProject && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="p-5 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
               <div className="flex items-center gap-3">
@@ -285,7 +287,7 @@ const AdminProjects: React.FC = () => {
                   </div>
 
                   {/* Team & Date */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="bg-gray-50 rounded-xl p-4">
                       <p className="text-sm text-gray-500 flex items-center gap-2 mb-1">
                         <Users className="w-4 h-4" />
@@ -316,7 +318,7 @@ const AdminProjects: React.FC = () => {
                       {selectedProject.approvalNotes && (
                         <p className="text-green-700 mb-4">{selectedProject.approvalNotes}</p>
                       )}
-                      <div className="grid grid-cols-2 gap-4 pt-3 border-t border-green-200">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-3 border-t border-green-200">
                         {selectedProject.assignedPartner && (
                           <div>
                             <p className="text-xs text-green-600 flex items-center gap-1">

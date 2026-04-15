@@ -34,20 +34,20 @@ const AdminTeams: React.FC = () => {
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Jamoalar</h1>
-          <p className="text-gray-600 mt-1">Barcha hududlardagi jamoalar</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Jamoalar</h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">Barcha hududlardagi jamoalar</p>
         </div>
-        <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
+        <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium self-start sm:self-auto">
           {filteredTeams.length} ta jamoa
         </span>
       </div>
 
       {/* Filters */}
       <div className="card">
-        <div className="flex flex-wrap gap-4">
-          <div className="flex-1 min-w-[250px]">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -64,7 +64,7 @@ const AdminTeams: React.FC = () => {
             <select
               value={regionFilter}
               onChange={(e) => setRegionFilter(e.target.value)}
-              className="input-field pr-10 appearance-none min-w-[200px]"
+              className="input-field pr-10 appearance-none w-full sm:min-w-[200px]"
             >
               <option value="all">Barcha hududlar</option>
               {REGIONS.map(region => (
@@ -172,10 +172,10 @@ const AdminTeams: React.FC = () => {
 
       {/* Team Detail Modal */}
       {selectedTeam && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fadeIn">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
-              <h2 className="text-xl font-bold text-gray-900">Jamoa tafsilotlari</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto animate-fadeIn">
+            <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">Jamoa tafsilotlari</h2>
               <button
                 onClick={() => setSelectedTeam(null)}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -183,7 +183,7 @@ const AdminTeams: React.FC = () => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-5 sm:space-y-6">
               {/* Team Info */}
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center">

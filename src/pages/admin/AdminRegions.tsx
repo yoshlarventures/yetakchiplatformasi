@@ -54,12 +54,12 @@ const AdminRegions: React.FC = () => {
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Hududlar</h1>
-          <p className="text-gray-600 mt-1">O'zbekiston viloyatlari va Qoraqalpog'iston</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Hududlar</h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">O'zbekiston viloyatlari va Qoraqalpog'iston</p>
         </div>
-        <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+        <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium self-start sm:self-auto">
           {REGIONS.length} ta hudud
         </span>
       </div>
@@ -128,16 +128,16 @@ const AdminRegions: React.FC = () => {
 
       {/* Region Detail Modal */}
       {selectedRegion && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-fadeIn">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <MapPin className="w-6 h-6 text-blue-600" />
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto animate-fadeIn">
+            <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">{selectedRegion.name}</h2>
-                  <p className="text-gray-500">{selectedRegion.districts.length} tuman/shahar</p>
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">{selectedRegion.name}</h2>
+                  <p className="text-sm text-gray-500">{selectedRegion.districts.length} tuman/shahar</p>
                 </div>
               </div>
               <button
@@ -148,7 +148,7 @@ const AdminRegions: React.FC = () => {
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-5 sm:space-y-6">
               {/* Hackathon Info */}
               {regionHackathon && (
                 <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl p-6">
@@ -173,7 +173,7 @@ const AdminRegions: React.FC = () => {
               )}
 
               {/* Stats */}
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 <div className="bg-gray-50 rounded-xl p-4 text-center">
                   <FolderKanban className="w-6 h-6 text-blue-600 mx-auto mb-2" />
                   <p className="text-2xl font-bold text-gray-900">{regionProjects.length}</p>
@@ -203,7 +203,7 @@ const AdminRegions: React.FC = () => {
               {/* Districts */}
               <div>
                 <h3 className="font-semibold text-gray-900 mb-4">Tumanlar va shaharlar</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {selectedRegion.districts.map((district) => {
                     const districtTeams = regionTeams.filter(t =>
                       t.members.some(m => m.districtId === district.id)
@@ -255,7 +255,7 @@ const AdminRegions: React.FC = () => {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-4">Jamoalar</h3>
                 {regionTeams.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {regionTeams.slice(0, 6).map((team) => (
                       <div key={team.id} className="bg-gray-50 rounded-lg p-4">
                         <div className="flex items-center gap-3">
@@ -285,6 +285,7 @@ const AdminRegions: React.FC = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

@@ -167,27 +167,27 @@ const UserProjects: React.FC = () => {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <p className="text-3xl font-bold text-gray-900">{regionProjects.length}</p>
-          <p className="text-sm text-gray-500">Jami loyihalar</p>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white rounded-xl p-3 sm:p-4 border border-gray-200">
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{regionProjects.length}</p>
+          <p className="text-xs sm:text-sm text-gray-500">Jami loyihalar</p>
         </div>
-        <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
-          <p className="text-3xl font-bold text-amber-600">{pendingProjects.length}</p>
-          <p className="text-sm text-amber-600">Kutilmoqda</p>
+        <div className="bg-amber-50 rounded-xl p-3 sm:p-4 border border-amber-200">
+          <p className="text-2xl sm:text-3xl font-bold text-amber-600">{pendingProjects.length}</p>
+          <p className="text-xs sm:text-sm text-amber-600">Kutilmoqda</p>
         </div>
-        <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-          <p className="text-3xl font-bold text-green-600">{approvedProjects.length}</p>
-          <p className="text-sm text-green-600">Maqullangan</p>
+        <div className="bg-green-50 rounded-xl p-3 sm:p-4 border border-green-200">
+          <p className="text-2xl sm:text-3xl font-bold text-green-600">{approvedProjects.length}</p>
+          <p className="text-xs sm:text-sm text-green-600">Maqullangan</p>
         </div>
-        <div className="bg-cyan-50 rounded-xl p-4 border border-cyan-200">
-          <p className="text-3xl font-bold text-cyan-600">{activeProjects.length}</p>
-          <p className="text-sm text-cyan-600">Jarayonda</p>
+        <div className="bg-cyan-50 rounded-xl p-3 sm:p-4 border border-cyan-200">
+          <p className="text-2xl sm:text-3xl font-bold text-cyan-600">{activeProjects.length}</p>
+          <p className="text-xs sm:text-sm text-cyan-600">Jarayonda</p>
         </div>
       </div>
 
       {/* Search & Filter */}
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
@@ -201,7 +201,7 @@ const UserProjects: React.FC = () => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none min-w-[180px]"
+          className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none w-full sm:w-auto sm:min-w-[180px]"
         >
           <option value="all">Barcha statuslar</option>
           <option value="preparation">Tayyorgarlik</option>
@@ -224,53 +224,53 @@ const UserProjects: React.FC = () => {
             <div
               key={project.id}
               onClick={() => openProject(project)}
-              className="bg-white rounded-xl p-5 border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer"
+              className="bg-white rounded-xl p-4 sm:p-5 border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${status.bg} ${status.text}`}>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${status.bg} ${status.text}`}>
                       {status.label}
                     </span>
-                    <span className="text-sm text-gray-400">{project.category}</span>
+                    <span className="text-xs sm:text-sm text-gray-400">{project.category}</span>
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-lg">{project.title}</h3>
-                  <div className="flex items-center gap-3 mt-1">
-                    <p className="text-gray-500 text-sm">{getTeamName(project.teamId)}</p>
+                  <h3 className="font-semibold text-gray-900 text-base sm:text-lg truncate">{project.title}</h3>
+                  <div className="flex items-center gap-2 sm:gap-3 mt-1">
+                    <p className="text-gray-500 text-xs sm:text-sm truncate">{getTeamName(project.teamId)}</p>
                     {(project.attachments?.length || 0) > 0 && (
-                      <span className="flex items-center gap-1 text-xs text-gray-400">
+                      <span className="flex items-center gap-1 text-xs text-gray-400 flex-shrink-0">
                         <Paperclip className="w-3 h-3" />
-                        {project.attachments?.length} fayl
+                        {project.attachments?.length}
                       </span>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4">
                   {project.isApprovedByDirector && project.allocatedBudget && (
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-green-600">
+                    <div className="text-left sm:text-right">
+                      <p className="text-base sm:text-lg font-bold text-green-600">
                         {(project.allocatedBudget / 1000000).toFixed(0)} mln
                       </p>
                       <p className="text-xs text-gray-400">ajratilgan</p>
                     </div>
                   )}
                   {project.status === 'revision' && (
-                    <div className="bg-orange-100 text-orange-700 px-3 py-1 rounded-lg text-sm font-medium">
+                    <div className="bg-orange-100 text-orange-700 px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-medium">
                       Tuzatish kerak
                     </div>
                   )}
                   {project.status === 'rejected' && (
-                    <div className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-sm font-medium">
+                    <div className="bg-red-100 text-red-700 px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-medium">
                       Rad etildi
                     </div>
                   )}
                   {project.status === 'presented' && (
-                    <div className="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">
+                    <div className="bg-purple-100 text-purple-700 px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap">
                       Javob kutilmoqda
                     </div>
                   )}
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                  <ChevronRight className="w-5 h-5 text-gray-400 hidden sm:block" />
                 </div>
               </div>
             </div>
@@ -286,12 +286,12 @@ const UserProjects: React.FC = () => {
 
       {/* Project Modal */}
       {selectedProject && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="p-5 border-b flex items-center justify-between bg-gray-50">
+            <div className="p-4 sm:p-5 border-b flex items-center justify-between bg-gray-50">
               <div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusConfig(selectedProject.status).bg} ${getStatusConfig(selectedProject.status).text}`}>
+                <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${getStatusConfig(selectedProject.status).bg} ${getStatusConfig(selectedProject.status).text}`}>
                   {getStatusConfig(selectedProject.status).label}
                 </span>
               </div>
@@ -301,19 +301,19 @@ const UserProjects: React.FC = () => {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b">
+            <div className="flex border-b overflow-x-auto">
               {['details', 'files', 'action', 'history'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab as any)}
-                  className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
+                  className={`flex-1 min-w-0 py-3 px-2 text-xs sm:text-sm font-medium transition-colors flex items-center justify-center gap-1 whitespace-nowrap ${
                     activeTab === tab
                       ? 'text-emerald-600 border-b-2 border-emerald-600'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  {tab === 'files' && <Paperclip className="w-4 h-4" />}
-                  {tab === 'details' ? 'Ma\'lumotlar' : tab === 'files' ? 'Fayllar' : tab === 'action' ? 'Amallar' : 'Tarix'}
+                  {tab === 'files' && <Paperclip className="w-3 sm:w-4 h-3 sm:h-4" />}
+                  <span className="truncate">{tab === 'details' ? 'Ma\'lumotlar' : tab === 'files' ? 'Fayllar' : tab === 'action' ? 'Amallar' : 'Tarix'}</span>
                   {tab === 'files' && (selectedProject.attachments?.length || 0) > 0 && (
                     <span className="ml-1 px-1.5 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full">
                       {selectedProject.attachments?.length}
@@ -324,7 +324,7 @@ const UserProjects: React.FC = () => {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-5">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5">
               {activeTab === 'details' && (
                 <div className="space-y-5">
                   {['preparation', 'draft', 'revision'].includes(selectedProject.status) ? (
@@ -379,7 +379,7 @@ const UserProjects: React.FC = () => {
                           {selectedProject.approvalNotes && (
                             <p className="text-green-700 text-sm">{selectedProject.approvalNotes}</p>
                           )}
-                          <div className="grid grid-cols-2 gap-4 pt-3 border-t border-green-200">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-green-200">
                             {selectedProject.assignedPartner && (
                               <div>
                                 <p className="text-xs text-green-600">Kim bilan ishlash</p>
@@ -508,7 +508,7 @@ const UserProjects: React.FC = () => {
                           onChange={(e) => setAssignedPartner(e.target.value)}
                           className="w-full px-4 py-3 border border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-white"
                         />
-                        <div className="flex gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3">
                           <select
                             value={partnerType}
                             onChange={(e) => setPartnerType(e.target.value)}
@@ -524,7 +524,7 @@ const UserProjects: React.FC = () => {
                             placeholder="Mablag' (mln)"
                             value={allocatedBudget}
                             onChange={(e) => setAllocatedBudget(e.target.value)}
-                            className="w-32 px-4 py-3 border border-green-200 rounded-xl bg-white"
+                            className="w-full sm:w-32 px-4 py-3 border border-green-200 rounded-xl bg-white"
                           />
                         </div>
                         <textarea
@@ -614,9 +614,9 @@ const UserProjects: React.FC = () => {
                           </div>
                         )}
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                           {selectedProject.assignedPartner && (
-                            <div className="bg-white rounded-lg p-4 border border-green-200">
+                            <div className="bg-white rounded-lg p-3 sm:p-4 border border-green-200">
                               <p className="text-xs text-green-600 mb-1">Hamkor tashkilot</p>
                               <p className="font-semibold text-green-800">{selectedProject.assignedPartner}</p>
                               {selectedProject.partnerType && (
@@ -625,9 +625,9 @@ const UserProjects: React.FC = () => {
                             </div>
                           )}
                           {selectedProject.allocatedBudget && (
-                            <div className="bg-white rounded-lg p-4 border border-green-200">
+                            <div className="bg-white rounded-lg p-3 sm:p-4 border border-green-200">
                               <p className="text-xs text-green-600 mb-1">Ajratilgan mablag'</p>
-                              <p className="font-bold text-green-800 text-xl">
+                              <p className="font-bold text-green-800 text-lg sm:text-xl">
                                 {(selectedProject.allocatedBudget / 1000000).toFixed(0)} mln
                               </p>
                               <p className="text-sm text-green-600">so'm</p>
