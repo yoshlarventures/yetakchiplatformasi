@@ -1,131 +1,212 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Team, Project, ProjectStatus, ProjectHistoryItem, ProjectAttachment } from '../types';
-
-// localStorage kalitlari
-const STORAGE_KEYS = {
-  teams: 'yetakchi_teams',
-  projects: 'yetakchi_projects',
-};
-
-// Date larni qayta tiklash uchun helper
-const reviveDates = (obj: any): any => {
-  if (obj === null || obj === undefined) return obj;
-  if (typeof obj === 'string') {
-    // ISO date formatini tekshirish
-    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(obj)) {
-      return new Date(obj);
-    }
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(reviveDates);
-  }
-  if (typeof obj === 'object') {
-    const result: any = {};
-    for (const key in obj) {
-      result[key] = reviveDates(obj[key]);
-    }
-    return result;
-  }
-  return obj;
-};
-
-// localStorage'dan o'qish
-const loadFromStorage = <T,>(key: string, fallback: T): T => {
-  try {
-    const stored = localStorage.getItem(key);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      return reviveDates(parsed);
-    }
-  } catch (error) {
-    console.error(`Error loading ${key} from localStorage:`, error);
-  }
-  return fallback;
-};
-
-// localStorage'ga yozish
-const saveToStorage = <T,>(key: string, data: T): void => {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    console.error(`Error saving ${key} to localStorage:`, error);
-  }
-};
+import { Team, Project, ProjectStatus, ProjectHistoryItem, ProjectAttachment, TeamMember } from '../types';
+import { supabase } from '../config/supabase';
 
 interface DataContextType {
   teams: Team[];
   projects: Project[];
-  addTeam: (team: Omit<Team, 'id' | 'createdAt'>) => Team;
-  updateTeam: (teamId: string, updates: Partial<Team>) => void;
-  deleteTeam: (teamId: string) => void;
-  addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'history'>) => Project;
-  updateProject: (projectId: string, updates: Partial<Project>) => void;
-  deleteProject: (projectId: string) => void;
-  changeProjectStatus: (projectId: string, status: ProjectStatus, action: string, description: string, actor: string) => void;
-  submitProject: (projectId: string) => void;
-  presentProject: (projectId: string) => void;
-  approveProject: (projectId: string, data: { notes: string; partner?: string; partnerType?: string; budget?: number }) => void;
-  rejectProject: (projectId: string, reason: string) => void;
-  requestRevision: (projectId: string, notes: string) => void;
-  startProject: (projectId: string) => void;
-  completeProject: (projectId: string) => void;
+  isLoading: boolean;
+  addTeam: (team: Omit<Team, 'id' | 'createdAt'>) => Promise<Team>;
+  updateTeam: (teamId: string, updates: Partial<Team>) => Promise<void>;
+  deleteTeam: (teamId: string) => Promise<void>;
+  addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'history'>) => Promise<Project>;
+  updateProject: (projectId: string, updates: Partial<Project>) => Promise<void>;
+  deleteProject: (projectId: string) => Promise<void>;
+  changeProjectStatus: (projectId: string, status: ProjectStatus, action: string, description: string, actor: string) => Promise<void>;
+  submitProject: (projectId: string) => Promise<void>;
+  presentProject: (projectId: string) => Promise<void>;
+  approveProject: (projectId: string, data: { notes: string; partner?: string; partnerType?: string; budget?: number }) => Promise<void>;
+  rejectProject: (projectId: string, reason: string) => Promise<void>;
+  requestRevision: (projectId: string, notes: string) => Promise<void>;
+  startProject: (projectId: string) => Promise<void>;
+  completeProject: (projectId: string) => Promise<void>;
   getTeamsByRegion: (regionId: string) => Team[];
   getProjectsByRegion: (regionId: string) => Project[];
   getProjectByTeamId: (teamId: string) => Project | undefined;
-  addAttachment: (projectId: string, attachment: ProjectAttachment) => void;
-  removeAttachment: (projectId: string, attachmentId: string) => void;
-  clearAllData: () => void;
+  addAttachment: (projectId: string, attachment: ProjectAttachment) => Promise<void>;
+  removeAttachment: (projectId: string, attachmentId: string) => Promise<void>;
+  refreshData: () => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+// Supabase'dan Team formatiga o'tkazish
+const mapTeamFromDB = (row: any): Team => ({
+  id: row.id,
+  name: row.name,
+  regionId: row.region_id,
+  hackathonId: row.hackathon_id,
+  projectId: row.project_id,
+  members: row.members || [],
+  createdAt: new Date(row.created_at),
+});
+
+// Supabase'dan Project formatiga o'tkazish
+const mapProjectFromDB = (row: any): Project => ({
+  id: row.id,
+  title: row.title,
+  description: row.description,
+  category: row.category,
+  teamId: row.team_id,
+  regionId: row.region_id,
+  status: row.status,
+  attachments: row.attachments || [],
+  history: (row.history || []).map((h: any) => ({
+    ...h,
+    date: new Date(h.date),
+  })),
+  isApprovedByDirector: row.is_approved_by_director,
+  approvalDate: row.approval_date ? new Date(row.approval_date) : undefined,
+  approvalNotes: row.approval_notes,
+  rejectionReason: row.rejection_reason,
+  rejectionDate: row.rejection_date ? new Date(row.rejection_date) : undefined,
+  revisionNotes: row.revision_notes,
+  assignedPartner: row.assigned_partner,
+  partnerType: row.partner_type,
+  allocatedBudget: row.allocated_budget,
+  budgetCurrency: row.budget_currency,
+  createdAt: new Date(row.created_at),
+  updatedAt: new Date(row.updated_at),
+});
+
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // localStorage'dan yuklash (foydalanuvchilar o'zlari ma'lumot qo'shadi)
-  const [teams, setTeams] = useState<Team[]>(() => {
-    return loadFromStorage<Team[]>(STORAGE_KEYS.teams, []);
-  });
-
-  const [projects, setProjects] = useState<Project[]>(() => {
-    const stored = loadFromStorage<Project[]>(STORAGE_KEYS.projects, []);
-    return stored.map(p => ({ ...p, history: p.history || [] }));
-  });
-
-  // Ma'lumotlar o'zgarganda localStorage'ga saqlash
-  useEffect(() => {
-    saveToStorage(STORAGE_KEYS.teams, teams);
-  }, [teams]);
-
-  useEffect(() => {
-    saveToStorage(STORAGE_KEYS.projects, projects);
-  }, [projects]);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-  const addTeam = (teamData: Omit<Team, 'id' | 'createdAt'>): Team => {
-    const newTeam: Team = {
-      ...teamData,
-      id: generateId(),
-      createdAt: new Date(),
-    };
-    setTeams(prev => [...prev, newTeam]);
-    return newTeam;
+  // Ma'lumotlarni yuklash
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      // Teams yuklash
+      const { data: teamsData, error: teamsError } = await supabase
+        .from('teams')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (teamsError) {
+        console.error('Error loading teams:', teamsError);
+      } else {
+        setTeams((teamsData || []).map(mapTeamFromDB));
+      }
+
+      // Projects yuklash
+      const { data: projectsData, error: projectsError } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (projectsError) {
+        console.error('Error loading projects:', projectsError);
+      } else {
+        setProjects((projectsData || []).map(mapProjectFromDB));
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const updateTeam = (teamId: string, updates: Partial<Team>) => {
+  // Birinchi yuklash va realtime obuna
+  useEffect(() => {
+    loadData();
+
+    // Realtime o'zgarishlarni kuzatish
+    const teamsChannel = supabase
+      .channel('teams-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, () => {
+        loadData();
+      })
+      .subscribe();
+
+    const projectsChannel = supabase
+      .channel('projects-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
+        loadData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(teamsChannel);
+      supabase.removeChannel(projectsChannel);
+    };
+  }, []);
+
+  const addTeam = async (teamData: Omit<Team, 'id' | 'createdAt'>): Promise<Team> => {
+    const newTeam = {
+      id: generateId(),
+      name: teamData.name,
+      region_id: teamData.regionId,
+      hackathon_id: teamData.hackathonId,
+      project_id: teamData.projectId,
+      members: teamData.members,
+      created_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase.from('teams').insert(newTeam);
+
+    if (error) {
+      console.error('Error adding team:', error);
+      throw error;
+    }
+
+    const team = mapTeamFromDB(newTeam);
+    setTeams(prev => [team, ...prev]);
+    return team;
+  };
+
+  const updateTeam = async (teamId: string, updates: Partial<Team>) => {
+    const dbUpdates: any = {};
+    if (updates.name !== undefined) dbUpdates.name = updates.name;
+    if (updates.regionId !== undefined) dbUpdates.region_id = updates.regionId;
+    if (updates.hackathonId !== undefined) dbUpdates.hackathon_id = updates.hackathonId;
+    if (updates.projectId !== undefined) dbUpdates.project_id = updates.projectId;
+    if (updates.members !== undefined) dbUpdates.members = updates.members;
+
+    const { error } = await supabase
+      .from('teams')
+      .update(dbUpdates)
+      .eq('id', teamId);
+
+    if (error) {
+      console.error('Error updating team:', error);
+      throw error;
+    }
+
     setTeams(prev => prev.map(team =>
       team.id === teamId ? { ...team, ...updates } : team
     ));
   };
 
-  const deleteTeam = (teamId: string) => {
+  const deleteTeam = async (teamId: string) => {
+    const { error } = await supabase.from('teams').delete().eq('id', teamId);
+
+    if (error) {
+      console.error('Error deleting team:', error);
+      throw error;
+    }
+
     setTeams(prev => prev.filter(team => team.id !== teamId));
+
+    // Loyihalardan team_id ni olib tashlash
+    const { error: projectError } = await supabase
+      .from('projects')
+      .update({ team_id: null })
+      .eq('team_id', teamId);
+
+    if (projectError) {
+      console.error('Error updating projects:', projectError);
+    }
+
     setProjects(prev => prev.map(project =>
       project.teamId === teamId ? { ...project, teamId: '' } : project
     ));
   };
 
-  const addProject = (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'history'>): Project => {
+  const addProject = async (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'history'>): Promise<Project> => {
     const now = new Date();
     const historyItem: ProjectHistoryItem = {
       id: generateId(),
@@ -136,60 +217,130 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       actor: 'Viloyat yetakchisi',
     };
 
-    const newProject: Project = {
-      ...projectData,
+    const newProject = {
       id: generateId(),
+      title: projectData.title,
+      description: projectData.description,
+      category: projectData.category,
+      team_id: projectData.teamId,
+      region_id: projectData.regionId,
+      status: projectData.status || 'draft',
+      attachments: projectData.attachments || [],
       history: [historyItem],
-      createdAt: now,
-      updatedAt: now,
+      created_at: now.toISOString(),
+      updated_at: now.toISOString(),
     };
-    setProjects(prev => [...prev, newProject]);
 
-    if (projectData.teamId) {
-      updateTeam(projectData.teamId, { projectId: newProject.id });
+    const { error } = await supabase.from('projects').insert(newProject);
+
+    if (error) {
+      console.error('Error adding project:', error);
+      throw error;
     }
 
-    return newProject;
+    const project = mapProjectFromDB(newProject);
+    setProjects(prev => [project, ...prev]);
+
+    if (projectData.teamId) {
+      await updateTeam(projectData.teamId, { projectId: project.id });
+    }
+
+    return project;
   };
 
-  const updateProject = (projectId: string, updates: Partial<Project>) => {
+  const updateProject = async (projectId: string, updates: Partial<Project>) => {
+    const dbUpdates: any = { updated_at: new Date().toISOString() };
+    if (updates.title !== undefined) dbUpdates.title = updates.title;
+    if (updates.description !== undefined) dbUpdates.description = updates.description;
+    if (updates.category !== undefined) dbUpdates.category = updates.category;
+    if (updates.teamId !== undefined) dbUpdates.team_id = updates.teamId;
+    if (updates.regionId !== undefined) dbUpdates.region_id = updates.regionId;
+    if (updates.status !== undefined) dbUpdates.status = updates.status;
+    if (updates.attachments !== undefined) dbUpdates.attachments = updates.attachments;
+    if (updates.history !== undefined) dbUpdates.history = updates.history;
+
+    const { error } = await supabase
+      .from('projects')
+      .update(dbUpdates)
+      .eq('id', projectId);
+
+    if (error) {
+      console.error('Error updating project:', error);
+      throw error;
+    }
+
     setProjects(prev => prev.map(project =>
       project.id === projectId ? { ...project, ...updates, updatedAt: new Date() } : project
     ));
   };
 
-  const deleteProject = (projectId: string) => {
+  const deleteProject = async (projectId: string) => {
     const project = projects.find(p => p.id === projectId);
-    if (project?.teamId) {
-      updateTeam(project.teamId, { projectId: undefined });
+
+    const { error } = await supabase.from('projects').delete().eq('id', projectId);
+
+    if (error) {
+      console.error('Error deleting project:', error);
+      throw error;
     }
+
+    if (project?.teamId) {
+      await updateTeam(project.teamId, { projectId: undefined });
+    }
+
     setProjects(prev => prev.filter(p => p.id !== projectId));
   };
 
-  const changeProjectStatus = (projectId: string, status: ProjectStatus, action: string, description: string, actor: string) => {
-    setProjects(prev => prev.map(project => {
-      if (project.id === projectId) {
-        const historyItem: ProjectHistoryItem = {
-          id: generateId(),
-          date: new Date(),
-          status,
-          action,
-          description,
-          actor,
-        };
+  const changeProjectStatus = async (
+    projectId: string,
+    status: ProjectStatus,
+    action: string,
+    description: string,
+    actor: string
+  ) => {
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    const historyItem: ProjectHistoryItem = {
+      id: generateId(),
+      date: new Date(),
+      status,
+      action,
+      description,
+      actor,
+    };
+
+    const newHistory = [...(project.history || []), historyItem];
+
+    const { error } = await supabase
+      .from('projects')
+      .update({
+        status,
+        history: newHistory,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', projectId);
+
+    if (error) {
+      console.error('Error changing project status:', error);
+      throw error;
+    }
+
+    setProjects(prev => prev.map(p => {
+      if (p.id === projectId) {
         return {
-          ...project,
+          ...p,
           status,
-          history: [...(project.history || []), historyItem],
+          history: newHistory,
           updatedAt: new Date(),
         };
       }
-      return project;
+      return p;
     }));
   };
 
   const submitProject = (projectId: string) => {
-    changeProjectStatus(
+    return changeProjectStatus(
       projectId,
       'submitted',
       'Ko\'rib chiqishga yuborildi',
@@ -199,7 +350,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const presentProject = (projectId: string) => {
-    changeProjectStatus(
+    return changeProjectStatus(
       projectId,
       'presented',
       'Taqdimot qilindi',
@@ -208,19 +359,46 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
   };
 
-  const approveProject = (projectId: string, data: { notes: string; partner?: string; partnerType?: string; budget?: number }) => {
-    setProjects(prev => prev.map(project => {
-      if (project.id === projectId) {
-        const historyItem: ProjectHistoryItem = {
-          id: generateId(),
-          date: new Date(),
-          status: 'approved',
-          action: 'Maqullandi',
-          description: data.notes || 'Direktor Alisher Sadullayev tomonidan maqullandi',
-          actor: 'Direktor Alisher Sadullayev',
-        };
+  const approveProject = async (projectId: string, data: { notes: string; partner?: string; partnerType?: string; budget?: number }) => {
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    const historyItem: ProjectHistoryItem = {
+      id: generateId(),
+      date: new Date(),
+      status: 'approved',
+      action: 'Maqullandi',
+      description: data.notes || 'Direktor Alisher Sadullayev tomonidan maqullandi',
+      actor: 'Direktor Alisher Sadullayev',
+    };
+
+    const newHistory = [...(project.history || []), historyItem];
+
+    const { error } = await supabase
+      .from('projects')
+      .update({
+        status: 'approved',
+        is_approved_by_director: true,
+        approval_date: new Date().toISOString(),
+        approval_notes: data.notes,
+        assigned_partner: data.partner,
+        partner_type: data.partnerType,
+        allocated_budget: data.budget,
+        budget_currency: 'UZS',
+        history: newHistory,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', projectId);
+
+    if (error) {
+      console.error('Error approving project:', error);
+      throw error;
+    }
+
+    setProjects(prev => prev.map(p => {
+      if (p.id === projectId) {
         return {
-          ...project,
+          ...p,
           status: 'approved',
           isApprovedByDirector: true,
           approvalDate: new Date(),
@@ -229,64 +407,108 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           partnerType: data.partnerType as Project['partnerType'],
           allocatedBudget: data.budget,
           budgetCurrency: 'UZS',
-          history: [...(project.history || []), historyItem],
+          history: newHistory,
           updatedAt: new Date(),
         };
       }
-      return project;
+      return p;
     }));
   };
 
-  const rejectProject = (projectId: string, reason: string) => {
-    setProjects(prev => prev.map(project => {
-      if (project.id === projectId) {
-        const historyItem: ProjectHistoryItem = {
-          id: generateId(),
-          date: new Date(),
-          status: 'rejected',
-          action: 'Rad etildi',
-          description: reason,
-          actor: 'Direktor Alisher Sadullayev',
-        };
+  const rejectProject = async (projectId: string, reason: string) => {
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    const historyItem: ProjectHistoryItem = {
+      id: generateId(),
+      date: new Date(),
+      status: 'rejected',
+      action: 'Rad etildi',
+      description: reason,
+      actor: 'Direktor Alisher Sadullayev',
+    };
+
+    const newHistory = [...(project.history || []), historyItem];
+
+    const { error } = await supabase
+      .from('projects')
+      .update({
+        status: 'rejected',
+        is_approved_by_director: false,
+        rejection_reason: reason,
+        rejection_date: new Date().toISOString(),
+        history: newHistory,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', projectId);
+
+    if (error) {
+      console.error('Error rejecting project:', error);
+      throw error;
+    }
+
+    setProjects(prev => prev.map(p => {
+      if (p.id === projectId) {
         return {
-          ...project,
+          ...p,
           status: 'rejected',
           isApprovedByDirector: false,
           rejectionReason: reason,
           rejectionDate: new Date(),
-          history: [...(project.history || []), historyItem],
+          history: newHistory,
           updatedAt: new Date(),
         };
       }
-      return project;
+      return p;
     }));
   };
 
-  const requestRevision = (projectId: string, notes: string) => {
-    setProjects(prev => prev.map(project => {
-      if (project.id === projectId) {
-        const historyItem: ProjectHistoryItem = {
-          id: generateId(),
-          date: new Date(),
-          status: 'revision',
-          action: 'Qayta ishlash kerak',
-          description: notes,
-          actor: 'Direktor Alisher Sadullayev',
-        };
+  const requestRevision = async (projectId: string, notes: string) => {
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    const historyItem: ProjectHistoryItem = {
+      id: generateId(),
+      date: new Date(),
+      status: 'revision',
+      action: 'Qayta ishlash kerak',
+      description: notes,
+      actor: 'Direktor Alisher Sadullayev',
+    };
+
+    const newHistory = [...(project.history || []), historyItem];
+
+    const { error } = await supabase
+      .from('projects')
+      .update({
+        status: 'revision',
+        revision_notes: notes,
+        history: newHistory,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', projectId);
+
+    if (error) {
+      console.error('Error requesting revision:', error);
+      throw error;
+    }
+
+    setProjects(prev => prev.map(p => {
+      if (p.id === projectId) {
         return {
-          ...project,
+          ...p,
           status: 'revision',
           revisionNotes: notes,
-          history: [...(project.history || []), historyItem],
+          history: newHistory,
           updatedAt: new Date(),
         };
       }
-      return project;
+      return p;
     }));
   };
 
   const startProject = (projectId: string) => {
-    changeProjectStatus(
+    return changeProjectStatus(
       projectId,
       'in_progress',
       'Ish boshlandi',
@@ -296,7 +518,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const completeProject = (projectId: string) => {
-    changeProjectStatus(
+    return changeProjectStatus(
       projectId,
       'completed',
       'Yakunlandi',
@@ -317,44 +539,75 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return projects.find(project => project.teamId === teamId);
   };
 
-  const addAttachment = (projectId: string, attachment: ProjectAttachment) => {
-    setProjects(prev => prev.map(project => {
-      if (project.id === projectId) {
+  const addAttachment = async (projectId: string, attachment: ProjectAttachment) => {
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    const newAttachments = [...(project.attachments || []), attachment];
+
+    const { error } = await supabase
+      .from('projects')
+      .update({
+        attachments: newAttachments,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', projectId);
+
+    if (error) {
+      console.error('Error adding attachment:', error);
+      throw error;
+    }
+
+    setProjects(prev => prev.map(p => {
+      if (p.id === projectId) {
         return {
-          ...project,
-          attachments: [...(project.attachments || []), attachment],
+          ...p,
+          attachments: newAttachments,
           updatedAt: new Date(),
         };
       }
-      return project;
+      return p;
     }));
   };
 
-  const removeAttachment = (projectId: string, attachmentId: string) => {
-    setProjects(prev => prev.map(project => {
-      if (project.id === projectId) {
+  const removeAttachment = async (projectId: string, attachmentId: string) => {
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    const newAttachments = (project.attachments || []).filter(a => a.id !== attachmentId);
+
+    const { error } = await supabase
+      .from('projects')
+      .update({
+        attachments: newAttachments,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', projectId);
+
+    if (error) {
+      console.error('Error removing attachment:', error);
+      throw error;
+    }
+
+    setProjects(prev => prev.map(p => {
+      if (p.id === projectId) {
         return {
-          ...project,
-          attachments: (project.attachments || []).filter(a => a.id !== attachmentId),
+          ...p,
+          attachments: newAttachments,
           updatedAt: new Date(),
         };
       }
-      return project;
+      return p;
     }));
   };
 
-  // Barcha ma'lumotlarni tozalash
-  const clearAllData = () => {
-    localStorage.removeItem(STORAGE_KEYS.teams);
-    localStorage.removeItem(STORAGE_KEYS.projects);
-    setTeams([]);
-    setProjects([]);
-  };
+  const refreshData = () => loadData();
 
   return (
     <DataContext.Provider value={{
       teams,
       projects,
+      isLoading,
       addTeam,
       updateTeam,
       deleteTeam,
@@ -374,7 +627,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       getProjectByTeamId,
       addAttachment,
       removeAttachment,
-      clearAllData,
+      refreshData,
     }}>
       {children}
     </DataContext.Provider>
