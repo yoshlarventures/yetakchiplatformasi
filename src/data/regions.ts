@@ -1,0 +1,307 @@
+import { Region } from '../types';
+
+export const REGIONS: Region[] = [
+  {
+    id: 'qoraqalpogiston',
+    name: 'Qoraqalpog\'iston Respublikasi',
+    code: 'QR',
+    districts: [
+      { id: 'nukus-sh', name: 'Nukus shahri', regionId: 'qoraqalpogiston' },
+      { id: 'amudaryo', name: 'Amudaryo tumani', regionId: 'qoraqalpogiston' },
+      { id: 'beruniy', name: 'Beruniy tumani', regionId: 'qoraqalpogiston' },
+      { id: 'chimboy', name: 'Chimboy tumani', regionId: 'qoraqalpogiston' },
+      { id: 'ellikqala', name: 'Ellikqal\'a tumani', regionId: 'qoraqalpogiston' },
+      { id: 'kegeyli', name: 'Kegeyli tumani', regionId: 'qoraqalpogiston' },
+      { id: 'moynoq', name: 'Mo\'ynoq tumani', regionId: 'qoraqalpogiston' },
+      { id: 'nukus-t', name: 'Nukus tumani', regionId: 'qoraqalpogiston' },
+      { id: 'qongirot', name: 'Qo\'ng\'irot tumani', regionId: 'qoraqalpogiston' },
+      { id: 'qorauzak', name: 'Qorao\'zak tumani', regionId: 'qoraqalpogiston' },
+      { id: 'shumanay', name: 'Shumanay tumani', regionId: 'qoraqalpogiston' },
+      { id: 'taxtakupir', name: 'Taxtako\'pir tumani', regionId: 'qoraqalpogiston' },
+      { id: 'tortkol', name: 'To\'rtko\'l tumani', regionId: 'qoraqalpogiston' },
+      { id: 'xojeli', name: 'Xo\'jayli tumani', regionId: 'qoraqalpogiston' },
+    ]
+  },
+  {
+    id: 'andijon',
+    name: 'Andijon viloyati',
+    code: 'AN',
+    districts: [
+      { id: 'andijon-sh', name: 'Andijon shahri', regionId: 'andijon' },
+      { id: 'andijon-t', name: 'Andijon tumani', regionId: 'andijon' },
+      { id: 'asaka', name: 'Asaka tumani', regionId: 'andijon' },
+      { id: 'baliqchi', name: 'Baliqchi tumani', regionId: 'andijon' },
+      { id: 'boz', name: 'Bo\'z tumani', regionId: 'andijon' },
+      { id: 'buloqboshi', name: 'Buloqboshi tumani', regionId: 'andijon' },
+      { id: 'izboskan', name: 'Izboskan tumani', regionId: 'andijon' },
+      { id: 'jalaquduq', name: 'Jalaquduq tumani', regionId: 'andijon' },
+      { id: 'xonobod', name: 'Xonobod shahri', regionId: 'andijon' },
+      { id: 'qorgontepa', name: 'Qo\'rg\'ontepa tumani', regionId: 'andijon' },
+      { id: 'marhamat', name: 'Marhamat tumani', regionId: 'andijon' },
+      { id: 'oltinkol', name: 'Oltinko\'l tumani', regionId: 'andijon' },
+      { id: 'paxtaobod', name: 'Paxtaobod tumani', regionId: 'andijon' },
+      { id: 'shahrixon', name: 'Shahrixon tumani', regionId: 'andijon' },
+      { id: 'ulugnar', name: 'Ulug\'nor tumani', regionId: 'andijon' },
+    ]
+  },
+  {
+    id: 'buxoro',
+    name: 'Buxoro viloyati',
+    code: 'BU',
+    districts: [
+      { id: 'buxoro-sh', name: 'Buxoro shahri', regionId: 'buxoro' },
+      { id: 'buxoro-t', name: 'Buxoro tumani', regionId: 'buxoro' },
+      { id: 'gijduvon', name: 'G\'ijduvon tumani', regionId: 'buxoro' },
+      { id: 'jondor', name: 'Jondor tumani', regionId: 'buxoro' },
+      { id: 'kogon-sh', name: 'Kogon shahri', regionId: 'buxoro' },
+      { id: 'kogon-t', name: 'Kogon tumani', regionId: 'buxoro' },
+      { id: 'olot', name: 'Olot tumani', regionId: 'buxoro' },
+      { id: 'peshku', name: 'Peshku tumani', regionId: 'buxoro' },
+      { id: 'qorakol', name: 'Qorako\'l tumani', regionId: 'buxoro' },
+      { id: 'qorovulbozor', name: 'Qorovulbozor tumani', regionId: 'buxoro' },
+      { id: 'romitan', name: 'Romitan tumani', regionId: 'buxoro' },
+      { id: 'shofirkon', name: 'Shofirkon tumani', regionId: 'buxoro' },
+      { id: 'vobkent', name: 'Vobkent tumani', regionId: 'buxoro' },
+    ]
+  },
+  {
+    id: 'fargona',
+    name: 'Farg\'ona viloyati',
+    code: 'FA',
+    districts: [
+      { id: 'fargona-sh', name: 'Farg\'ona shahri', regionId: 'fargona' },
+      { id: 'fargona-t', name: 'Farg\'ona tumani', regionId: 'fargona' },
+      { id: 'bagdod', name: 'Bag\'dod tumani', regionId: 'fargona' },
+      { id: 'beshariq', name: 'Beshariq tumani', regionId: 'fargona' },
+      { id: 'buvayda', name: 'Buvayda tumani', regionId: 'fargona' },
+      { id: 'dangara', name: 'Dang\'ara tumani', regionId: 'fargona' },
+      { id: 'furqat', name: 'Furqat tumani', regionId: 'fargona' },
+      { id: 'qoqon', name: 'Qo\'qon shahri', regionId: 'fargona' },
+      { id: 'quva', name: 'Quva tumani', regionId: 'fargona' },
+      { id: 'margilan', name: 'Marg\'ilon shahri', regionId: 'fargona' },
+      { id: 'oltiariq', name: 'Oltiariq tumani', regionId: 'fargona' },
+      { id: 'ozbekiston', name: 'O\'zbekiston tumani', regionId: 'fargona' },
+      { id: 'qoshtepa', name: 'Qoshtepa tumani', regionId: 'fargona' },
+      { id: 'rishton', name: 'Rishton tumani', regionId: 'fargona' },
+      { id: 'sox', name: 'So\'x tumani', regionId: 'fargona' },
+      { id: 'toshloq', name: 'Toshloq tumani', regionId: 'fargona' },
+      { id: 'uchkoprik', name: 'Uchko\'prik tumani', regionId: 'fargona' },
+      { id: 'yozyovon', name: 'Yozyovon tumani', regionId: 'fargona' },
+    ]
+  },
+  {
+    id: 'jizzax',
+    name: 'Jizzax viloyati',
+    code: 'JI',
+    districts: [
+      { id: 'jizzax-sh', name: 'Jizzax shahri', regionId: 'jizzax' },
+      { id: 'arnasoy', name: 'Arnasoy tumani', regionId: 'jizzax' },
+      { id: 'baxmal', name: 'Baxmal tumani', regionId: 'jizzax' },
+      { id: 'dostlik', name: 'Do\'stlik tumani', regionId: 'jizzax' },
+      { id: 'forish', name: 'Forish tumani', regionId: 'jizzax' },
+      { id: 'gallaorol', name: 'G\'allaorol tumani', regionId: 'jizzax' },
+      { id: 'mirzachol', name: 'Mirzacho\'l tumani', regionId: 'jizzax' },
+      { id: 'paxtakor', name: 'Paxtakor tumani', regionId: 'jizzax' },
+      { id: 'yangiobod', name: 'Yangiobod tumani', regionId: 'jizzax' },
+      { id: 'zomin', name: 'Zomin tumani', regionId: 'jizzax' },
+      { id: 'zarbdor', name: 'Zarbdor tumani', regionId: 'jizzax' },
+      { id: 'zafarobod', name: 'Zafarobod tumani', regionId: 'jizzax' },
+    ]
+  },
+  {
+    id: 'xorazm',
+    name: 'Xorazm viloyati',
+    code: 'XO',
+    districts: [
+      { id: 'urganch-sh', name: 'Urganch shahri', regionId: 'xorazm' },
+      { id: 'urganch-t', name: 'Urganch tumani', regionId: 'xorazm' },
+      { id: 'bogot', name: 'Bog\'ot tumani', regionId: 'xorazm' },
+      { id: 'gurlan', name: 'Gurlan tumani', regionId: 'xorazm' },
+      { id: 'xiva', name: 'Xiva tumani', regionId: 'xorazm' },
+      { id: 'xonqa', name: 'Xonqa tumani', regionId: 'xorazm' },
+      { id: 'hazorasp', name: 'Hazorasp tumani', regionId: 'xorazm' },
+      { id: 'qoshkopir', name: 'Qo\'shko\'pir tumani', regionId: 'xorazm' },
+      { id: 'shovot', name: 'Shovot tumani', regionId: 'xorazm' },
+      { id: 'yangiariq', name: 'Yangiariq tumani', regionId: 'xorazm' },
+      { id: 'yangibozor', name: 'Yangibozor tumani', regionId: 'xorazm' },
+    ]
+  },
+  {
+    id: 'namangan',
+    name: 'Namangan viloyati',
+    code: 'NA',
+    districts: [
+      { id: 'namangan-sh', name: 'Namangan shahri', regionId: 'namangan' },
+      { id: 'chortoq', name: 'Chortoq tumani', regionId: 'namangan' },
+      { id: 'chust', name: 'Chust tumani', regionId: 'namangan' },
+      { id: 'kosonsoy', name: 'Kosonsoy tumani', regionId: 'namangan' },
+      { id: 'mingbuloq', name: 'Mingbuloq tumani', regionId: 'namangan' },
+      { id: 'namangan-t', name: 'Namangan tumani', regionId: 'namangan' },
+      { id: 'norin', name: 'Norin tumani', regionId: 'namangan' },
+      { id: 'pop', name: 'Pop tumani', regionId: 'namangan' },
+      { id: 'toraqorgon', name: 'To\'raqo\'rg\'on tumani', regionId: 'namangan' },
+      { id: 'uchqorgon', name: 'Uchqo\'rg\'on tumani', regionId: 'namangan' },
+      { id: 'uychi', name: 'Uychi tumani', regionId: 'namangan' },
+      { id: 'yangiqorgon', name: 'Yangiqo\'rg\'on tumani', regionId: 'namangan' },
+    ]
+  },
+  {
+    id: 'navoiy',
+    name: 'Navoiy viloyati',
+    code: 'NV',
+    districts: [
+      { id: 'navoiy-sh', name: 'Navoiy shahri', regionId: 'navoiy' },
+      { id: 'zarafshon', name: 'Zarafshon shahri', regionId: 'navoiy' },
+      { id: 'karmana', name: 'Karmana tumani', regionId: 'navoiy' },
+      { id: 'konimex', name: 'Konimex tumani', regionId: 'navoiy' },
+      { id: 'navbahor', name: 'Navbahor tumani', regionId: 'navoiy' },
+      { id: 'nurota', name: 'Nurota tumani', regionId: 'navoiy' },
+      { id: 'qiziltepa', name: 'Qiziltepa tumani', regionId: 'navoiy' },
+      { id: 'tomdi', name: 'Tomdi tumani', regionId: 'navoiy' },
+      { id: 'uchquduq', name: 'Uchquduq tumani', regionId: 'navoiy' },
+      { id: 'xatirchi', name: 'Xatirchi tumani', regionId: 'navoiy' },
+    ]
+  },
+  {
+    id: 'qashqadaryo',
+    name: 'Qashqadaryo viloyati',
+    code: 'QA',
+    districts: [
+      { id: 'qarshi-sh', name: 'Qarshi shahri', regionId: 'qashqadaryo' },
+      { id: 'shahrisabz', name: 'Shahrisabz shahri', regionId: 'qashqadaryo' },
+      { id: 'chiroqchi', name: 'Chiroqchi tumani', regionId: 'qashqadaryo' },
+      { id: 'dehqonobod', name: 'Dehqonobod tumani', regionId: 'qashqadaryo' },
+      { id: 'guzor', name: 'G\'uzor tumani', regionId: 'qashqadaryo' },
+      { id: 'kasbi', name: 'Kasbi tumani', regionId: 'qashqadaryo' },
+      { id: 'kitob', name: 'Kitob tumani', regionId: 'qashqadaryo' },
+      { id: 'koson', name: 'Koson tumani', regionId: 'qashqadaryo' },
+      { id: 'mirishkor', name: 'Mirishkor tumani', regionId: 'qashqadaryo' },
+      { id: 'muborak', name: 'Muborak tumani', regionId: 'qashqadaryo' },
+      { id: 'nishon', name: 'Nishon tumani', regionId: 'qashqadaryo' },
+      { id: 'qamashi', name: 'Qamashi tumani', regionId: 'qashqadaryo' },
+      { id: 'qarshi-t', name: 'Qarshi tumani', regionId: 'qashqadaryo' },
+      { id: 'yakkabog', name: 'Yakkabog\' tumani', regionId: 'qashqadaryo' },
+    ]
+  },
+  {
+    id: 'samarqand',
+    name: 'Samarqand viloyati',
+    code: 'SA',
+    districts: [
+      { id: 'samarqand-sh', name: 'Samarqand shahri', regionId: 'samarqand' },
+      { id: 'kattaqorgon', name: 'Kattaqo\'rg\'on shahri', regionId: 'samarqand' },
+      { id: 'bulung', name: 'Bulung\'ur tumani', regionId: 'samarqand' },
+      { id: 'ishtixon', name: 'Ishtixon tumani', regionId: 'samarqand' },
+      { id: 'jomboy', name: 'Jomboy tumani', regionId: 'samarqand' },
+      { id: 'kattaqorgon-t', name: 'Kattaqo\'rg\'on tumani', regionId: 'samarqand' },
+      { id: 'narpay', name: 'Narpay tumani', regionId: 'samarqand' },
+      { id: 'nurobod', name: 'Nurobod tumani', regionId: 'samarqand' },
+      { id: 'oqdaryo', name: 'Oqdaryo tumani', regionId: 'samarqand' },
+      { id: 'pastdargom', name: 'Pastdarg\'om tumani', regionId: 'samarqand' },
+      { id: 'paxtachi', name: 'Paxtachi tumani', regionId: 'samarqand' },
+      { id: 'payariq', name: 'Payariq tumani', regionId: 'samarqand' },
+      { id: 'qoshrabod', name: 'Qo\'shrabod tumani', regionId: 'samarqand' },
+      { id: 'samarqand-t', name: 'Samarqand tumani', regionId: 'samarqand' },
+      { id: 'toyloq', name: 'Toyloq tumani', regionId: 'samarqand' },
+      { id: 'urgut', name: 'Urgut tumani', regionId: 'samarqand' },
+    ]
+  },
+  {
+    id: 'sirdaryo',
+    name: 'Sirdaryo viloyati',
+    code: 'SI',
+    districts: [
+      { id: 'guliston-sh', name: 'Guliston shahri', regionId: 'sirdaryo' },
+      { id: 'yangiyer', name: 'Yangiyer shahri', regionId: 'sirdaryo' },
+      { id: 'shirin', name: 'Shirin shahri', regionId: 'sirdaryo' },
+      { id: 'boyovut', name: 'Boyovut tumani', regionId: 'sirdaryo' },
+      { id: 'guliston-t', name: 'Guliston tumani', regionId: 'sirdaryo' },
+      { id: 'mirzaobod', name: 'Mirzaobod tumani', regionId: 'sirdaryo' },
+      { id: 'oqoltin', name: 'Oqoltin tumani', regionId: 'sirdaryo' },
+      { id: 'sardoba', name: 'Sardoba tumani', regionId: 'sirdaryo' },
+      { id: 'sayxunobod', name: 'Sayxunobod tumani', regionId: 'sirdaryo' },
+      { id: 'sirdaryo-t', name: 'Sirdaryo tumani', regionId: 'sirdaryo' },
+      { id: 'xovos', name: 'Xovos tumani', regionId: 'sirdaryo' },
+    ]
+  },
+  {
+    id: 'surxondaryo',
+    name: 'Surxondaryo viloyati',
+    code: 'SU',
+    districts: [
+      { id: 'termiz-sh', name: 'Termiz shahri', regionId: 'surxondaryo' },
+      { id: 'angor', name: 'Angor tumani', regionId: 'surxondaryo' },
+      { id: 'bandixon', name: 'Bandixon tumani', regionId: 'surxondaryo' },
+      { id: 'boysun', name: 'Boysun tumani', regionId: 'surxondaryo' },
+      { id: 'denov', name: 'Denov tumani', regionId: 'surxondaryo' },
+      { id: 'jarqorgon', name: 'Jarqo\'rg\'on tumani', regionId: 'surxondaryo' },
+      { id: 'muzrabod', name: 'Muzrabod tumani', regionId: 'surxondaryo' },
+      { id: 'oltinsoy', name: 'Oltinsoy tumani', regionId: 'surxondaryo' },
+      { id: 'qiziriq', name: 'Qiziriq tumani', regionId: 'surxondaryo' },
+      { id: 'qumqorgon', name: 'Qumqo\'rg\'on tumani', regionId: 'surxondaryo' },
+      { id: 'sariosiyo', name: 'Sariosiyo tumani', regionId: 'surxondaryo' },
+      { id: 'sherobod', name: 'Sherobod tumani', regionId: 'surxondaryo' },
+      { id: 'shorchi', name: 'Sho\'rchi tumani', regionId: 'surxondaryo' },
+      { id: 'termiz-t', name: 'Termiz tumani', regionId: 'surxondaryo' },
+      { id: 'uzun', name: 'Uzun tumani', regionId: 'surxondaryo' },
+    ]
+  },
+  {
+    id: 'toshkent-v',
+    name: 'Toshkent viloyati',
+    code: 'TV',
+    districts: [
+      { id: 'nurafshon', name: 'Nurafshon shahri', regionId: 'toshkent-v' },
+      { id: 'olmaliq', name: 'Olmaliq shahri', regionId: 'toshkent-v' },
+      { id: 'angren', name: 'Angren shahri', regionId: 'toshkent-v' },
+      { id: 'chirchiq', name: 'Chirchiq shahri', regionId: 'toshkent-v' },
+      { id: 'ohangaron-sh', name: 'Ohangaron shahri', regionId: 'toshkent-v' },
+      { id: 'bekobod', name: 'Bekobod shahri', regionId: 'toshkent-v' },
+      { id: 'bostonliq', name: 'Bo\'stonliq tumani', regionId: 'toshkent-v' },
+      { id: 'boka', name: 'Bo\'ka tumani', regionId: 'toshkent-v' },
+      { id: 'chinoz', name: 'Chinoz tumani', regionId: 'toshkent-v' },
+      { id: 'qibray', name: 'Qibray tumani', regionId: 'toshkent-v' },
+      { id: 'ohangaron-t', name: 'Ohangaron tumani', regionId: 'toshkent-v' },
+      { id: 'oqqorgon', name: 'Oqqo\'rg\'on tumani', regionId: 'toshkent-v' },
+      { id: 'parkent', name: 'Parkent tumani', regionId: 'toshkent-v' },
+      { id: 'piskent', name: 'Piskent tumani', regionId: 'toshkent-v' },
+      { id: 'toshkent-t', name: 'Toshkent tumani', regionId: 'toshkent-v' },
+      { id: 'yangiyol', name: 'Yangiyo\'l tumani', regionId: 'toshkent-v' },
+      { id: 'yuqorichirchiq', name: 'Yuqorichirchiq tumani', regionId: 'toshkent-v' },
+      { id: 'zangota', name: 'Zangiota tumani', regionId: 'toshkent-v' },
+      { id: 'quyichirchiq', name: 'Quyichirchiq tumani', regionId: 'toshkent-v' },
+    ]
+  },
+  {
+    id: 'toshkent-sh',
+    name: 'Toshkent shahri',
+    code: 'TS',
+    districts: [
+      { id: 'bektemir', name: 'Bektemir tumani', regionId: 'toshkent-sh' },
+      { id: 'chilonzor', name: 'Chilonzor tumani', regionId: 'toshkent-sh' },
+      { id: 'mirobod', name: 'Mirobod tumani', regionId: 'toshkent-sh' },
+      { id: 'mirzo-ulugbek', name: 'Mirzo Ulug\'bek tumani', regionId: 'toshkent-sh' },
+      { id: 'olmazor', name: 'Olmazor tumani', regionId: 'toshkent-sh' },
+      { id: 'sergeli', name: 'Sergeli tumani', regionId: 'toshkent-sh' },
+      { id: 'shayxontohur', name: 'Shayxontohur tumani', regionId: 'toshkent-sh' },
+      { id: 'uchtepa', name: 'Uchtepa tumani', regionId: 'toshkent-sh' },
+      { id: 'yakkasaroy', name: 'Yakkasaroy tumani', regionId: 'toshkent-sh' },
+      { id: 'yunusobod', name: 'Yunusobod tumani', regionId: 'toshkent-sh' },
+      { id: 'yashnobod', name: 'Yashnobod tumani', regionId: 'toshkent-sh' },
+    ]
+  },
+];
+
+export const getRegionById = (id: string): Region | undefined => {
+  return REGIONS.find(r => r.id === id);
+};
+
+export const getDistrictById = (districtId: string): { district: { id: string; name: string; regionId: string }, region: Region } | undefined => {
+  for (const region of REGIONS) {
+    const district = region.districts.find(d => d.id === districtId);
+    if (district) {
+      return { district, region };
+    }
+  }
+  return undefined;
+};
