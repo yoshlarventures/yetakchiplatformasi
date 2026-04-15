@@ -255,6 +255,21 @@ const UserProjects: React.FC = () => {
                       <p className="text-xs text-gray-400">ajratilgan</p>
                     </div>
                   )}
+                  {project.status === 'revision' && (
+                    <div className="bg-orange-100 text-orange-700 px-3 py-1 rounded-lg text-sm font-medium">
+                      Tuzatish kerak
+                    </div>
+                  )}
+                  {project.status === 'rejected' && (
+                    <div className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-sm font-medium">
+                      Rad etildi
+                    </div>
+                  )}
+                  {project.status === 'presented' && (
+                    <div className="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">
+                      Javob kutilmoqda
+                    </div>
+                  )}
                   <ChevronRight className="w-5 h-5 text-gray-400" />
                 </div>
               </div>
@@ -440,7 +455,7 @@ const UserProjects: React.FC = () => {
               {activeTab === 'action' && (
                 <div className="space-y-4">
                   {/* Yuborish */}
-                  {['preparation', 'draft', 'revision'].includes(selectedProject.status) && (
+                  {['preparation', 'draft'].includes(selectedProject.status) && (
                     <button
                       onClick={handleSubmit}
                       className="w-full py-4 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 flex items-center justify-center gap-2"
@@ -461,8 +476,26 @@ const UserProjects: React.FC = () => {
                     </button>
                   )}
 
-                  {/* Maqullash formasi */}
-                  {selectedProject.status === 'presented' && (
+                  {/* Viloyat yetakchisi uchun - taqdimotdan keyin kutish */}
+                  {selectedProject.status === 'presented' && user?.role === 'regional_leader' && (
+                    <div className="bg-purple-50 rounded-xl p-6 text-center space-y-3">
+                      <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
+                        <Presentation className="w-8 h-8 text-purple-600" />
+                      </div>
+                      <h3 className="font-semibold text-purple-800 text-lg">
+                        Taqdimot qilindi
+                      </h3>
+                      <p className="text-purple-600">
+                        Loyiha direktorga taqdimot qilindi. Direktor Alisher Sadullayev javobini kutmoqdasiz.
+                      </p>
+                      <p className="text-sm text-purple-500">
+                        Direktor loyihani maqullaydi, rad etadi yoki qayta ishlashga yuboradi.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Admin/Direktor uchun - maqullash formasi */}
+                  {selectedProject.status === 'presented' && user?.role === 'admin' && (
                     <div className="space-y-4">
                       <div className="bg-green-50 rounded-xl p-5 space-y-4">
                         <h3 className="font-semibold text-green-800 flex items-center gap-2">
@@ -549,17 +582,6 @@ const UserProjects: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Ishni boshlash */}
-                  {selectedProject.status === 'approved' && (
-                    <button
-                      onClick={handleStart}
-                      className="w-full py-4 bg-cyan-600 text-white rounded-xl font-medium hover:bg-cyan-700 flex items-center justify-center gap-2"
-                    >
-                      <Play className="w-5 h-5" />
-                      Ishni boshlash
-                    </button>
-                  )}
-
                   {/* Yakunlash */}
                   {selectedProject.status === 'in_progress' && (
                     <button
@@ -571,9 +593,164 @@ const UserProjects: React.FC = () => {
                     </button>
                   )}
 
-                  {['rejected', 'completed'].includes(selectedProject.status) && (
+                  {/* Viloyat yetakchisi uchun - direktor qarorini ko'rsatish */}
+                  {selectedProject.status === 'approved' && user?.role === 'regional_leader' && (
+                    <div className="space-y-4">
+                      <div className="bg-green-50 rounded-xl p-6 space-y-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <CheckCircle className="w-6 h-6 text-green-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-green-800 text-lg">Tabriklaymiz!</h3>
+                            <p className="text-green-600">Loyihangiz direktor tomonidan maqullandi</p>
+                          </div>
+                        </div>
+
+                        {selectedProject.approvalNotes && (
+                          <div className="bg-white rounded-lg p-4 border border-green-200">
+                            <p className="text-sm text-green-600 mb-1">Direktor izohi:</p>
+                            <p className="text-green-800">{selectedProject.approvalNotes}</p>
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-4">
+                          {selectedProject.assignedPartner && (
+                            <div className="bg-white rounded-lg p-4 border border-green-200">
+                              <p className="text-xs text-green-600 mb-1">Hamkor tashkilot</p>
+                              <p className="font-semibold text-green-800">{selectedProject.assignedPartner}</p>
+                              {selectedProject.partnerType && (
+                                <p className="text-sm text-green-600">{PARTNER_TYPES[selectedProject.partnerType as keyof typeof PARTNER_TYPES]}</p>
+                              )}
+                            </div>
+                          )}
+                          {selectedProject.allocatedBudget && (
+                            <div className="bg-white rounded-lg p-4 border border-green-200">
+                              <p className="text-xs text-green-600 mb-1">Ajratilgan mablag'</p>
+                              <p className="font-bold text-green-800 text-xl">
+                                {(selectedProject.allocatedBudget / 1000000).toFixed(0)} mln
+                              </p>
+                              <p className="text-sm text-green-600">so'm</p>
+                            </div>
+                          )}
+                        </div>
+
+                        <p className="text-sm text-green-600 text-center pt-2">
+                          Endi "Ishni boshlash" tugmasini bosib loyihani amalga oshirishni boshlashingiz mumkin
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={handleStart}
+                        className="w-full py-4 bg-cyan-600 text-white rounded-xl font-medium hover:bg-cyan-700 flex items-center justify-center gap-2"
+                      >
+                        <Play className="w-5 h-5" />
+                        Ishni boshlash
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Admin uchun - ishni boshlash */}
+                  {selectedProject.status === 'approved' && user?.role === 'admin' && (
+                    <button
+                      onClick={handleStart}
+                      className="w-full py-4 bg-cyan-600 text-white rounded-xl font-medium hover:bg-cyan-700 flex items-center justify-center gap-2"
+                    >
+                      <Play className="w-5 h-5" />
+                      Ishni boshlash
+                    </button>
+                  )}
+
+                  {/* Viloyat yetakchisi uchun - rad etilgan */}
+                  {selectedProject.status === 'rejected' && user?.role === 'regional_leader' && (
+                    <div className="bg-red-50 rounded-xl p-6 space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                          <XCircle className="w-6 h-6 text-red-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-red-800 text-lg">Loyiha rad etildi</h3>
+                          <p className="text-red-600">Afsuski, direktor loyihani maqullamadi</p>
+                        </div>
+                      </div>
+
+                      {selectedProject.rejectionReason && (
+                        <div className="bg-white rounded-lg p-4 border border-red-200">
+                          <p className="text-sm text-red-600 mb-1">Rad etish sababi:</p>
+                          <p className="text-red-800">{selectedProject.rejectionReason}</p>
+                        </div>
+                      )}
+
+                      <p className="text-sm text-red-600 text-center">
+                        Yangi loyiha taklif qilishingiz mumkin
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Viloyat yetakchisi uchun - qayta ishlash */}
+                  {selectedProject.status === 'revision' && user?.role === 'regional_leader' && (
+                    <div className="space-y-4">
+                      <div className="bg-orange-50 rounded-xl p-6 space-y-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                            <AlertCircle className="w-6 h-6 text-orange-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-orange-800 text-lg">Qayta ishlash kerak</h3>
+                            <p className="text-orange-600">Direktor loyihani qayta ko'rib chiqishni so'radi</p>
+                          </div>
+                        </div>
+
+                        {selectedProject.revisionNotes && (
+                          <div className="bg-white rounded-lg p-4 border border-orange-200">
+                            <p className="text-sm text-orange-600 mb-1">Direktor ko'rsatmalari:</p>
+                            <p className="text-orange-800 font-medium">{selectedProject.revisionNotes}</p>
+                          </div>
+                        )}
+
+                        <p className="text-sm text-orange-600 text-center">
+                          "Ma'lumotlar" tabidan loyihani tahrirlang va qayta yuboring
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={handleSubmit}
+                        className="w-full py-4 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 flex items-center justify-center gap-2"
+                      >
+                        <Send className="w-5 h-5" />
+                        Qayta yuborish
+                      </button>
+                    </div>
+                  )}
+
+                  {selectedProject.status === 'completed' && (
                     <div className="text-center py-8 text-gray-400">
-                      Bu loyiha uchun amallar mavjud emas
+                      Bu loyiha yakunlangan
+                    </div>
+                  )}
+
+                  {selectedProject.status === 'rejected' && user?.role === 'admin' && (
+                    <div className="text-center py-8 text-gray-400">
+                      Bu loyiha rad etilgan
+                    </div>
+                  )}
+
+                  {selectedProject.status === 'revision' && user?.role === 'admin' && (
+                    <div className="bg-orange-50 rounded-xl p-6 text-center space-y-3">
+                      <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto">
+                        <AlertCircle className="w-8 h-8 text-orange-600" />
+                      </div>
+                      <h3 className="font-semibold text-orange-800 text-lg">
+                        Qayta ishlashga yuborilgan
+                      </h3>
+                      <p className="text-orange-600">
+                        Loyiha viloyat yetakchisiga qayta ishlash uchun yuborildi.
+                      </p>
+                      {selectedProject.revisionNotes && (
+                        <p className="text-sm text-orange-700 bg-white rounded-lg p-3 border border-orange-200">
+                          <strong>Ko'rsatma:</strong> {selectedProject.revisionNotes}
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
