@@ -106,7 +106,7 @@ const AppRoutes: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/yetakchiplatformasi">
       <AuthProvider>
         <DataProvider>
           <AppRoutes />
