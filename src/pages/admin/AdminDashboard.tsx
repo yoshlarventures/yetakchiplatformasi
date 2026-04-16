@@ -173,7 +173,11 @@ const AdminDashboard: React.FC = () => {
               <Banknote className="w-5 h-5 text-indigo-600" />
             </div>
             <div>
-              <p className="text-xl font-bold text-indigo-700">{(totalBudget / 1000000).toFixed(0)}M</p>
+              <p className="text-xl font-bold text-indigo-700">
+                {totalBudget >= 1000000000
+                  ? `${(totalBudget / 1000000000).toFixed(1)} mlrd`
+                  : `${(totalBudget / 1000000).toFixed(0)} mln`}
+              </p>
               <p className="text-xs text-indigo-600">Byudjet</p>
             </div>
           </div>
