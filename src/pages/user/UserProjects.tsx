@@ -127,7 +127,7 @@ const UserProjects: React.FC = () => {
       notes: approvalNotes || 'Direktor Alisher Sadullayev tomonidan maqullandi.',
       partner: assignedPartner,
       partnerType,
-      budget: allocatedBudget ? parseFloat(allocatedBudget) * 1000000 : undefined,
+      budget: allocatedBudget ? parseFloat(allocatedBudget) : undefined,
     });
     setSelectedProject(null);
   };
@@ -521,10 +521,10 @@ const UserProjects: React.FC = () => {
                           </select>
                           <input
                             type="number"
-                            placeholder="Mablag' (mln)"
+                            placeholder="Mablag' (so'm)"
                             value={allocatedBudget}
                             onChange={(e) => setAllocatedBudget(e.target.value)}
-                            className="w-full sm:w-32 px-4 py-3 border border-green-200 rounded-xl bg-white"
+                            className="w-full sm:w-40 px-4 py-3 border border-green-200 rounded-xl bg-white"
                           />
                         </div>
                         <textarea
