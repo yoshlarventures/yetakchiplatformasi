@@ -102,6 +102,21 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (projectsError) {
         console.error('Error loading projects:', projectsError);
       } else {
+        // Noto'g'ri byudjet qiymatlarini tuzatish (1 trilliondan katta = xato)
+        const projectsToFix = (projectsData || []).filter(
+          (p: any) => p.allocated_budget && p.allocated_budget > 1000000000000
+        );
+
+        // Bazada tuzatish
+        for (const project of projectsToFix) {
+          const correctedBudget = project.allocated_budget / 1000000;
+          await supabase
+            .from('projects')
+            .update({ allocated_budget: correctedBudget })
+            .eq('id', project.id);
+          project.allocated_budget = correctedBudget;
+        }
+
         setProjects((projectsData || []).map(mapProjectFromDB));
       }
     } catch (error) {
