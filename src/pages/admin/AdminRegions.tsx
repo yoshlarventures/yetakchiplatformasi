@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { REGIONS } from '../../data/regions';
 import { HACKATHONS } from '../../data/mockData';
+import { formatMoney } from '../../utils/format';
 import {
   Search,
   MapPin,
@@ -116,7 +117,7 @@ const AdminRegions: React.FC = () => {
                 </div>
                 <div className="bg-blue-50 rounded-lg p-3 text-center">
                   <p className="text-lg font-bold text-blue-600">
-                    {stats.totalBudget > 0 ? `${(stats.totalBudget / 1000000).toFixed(0)} mln` : '-'}
+                    {formatMoney(stats.totalBudget)}
                   </p>
                   <p className="text-xs text-blue-600">Byudjet</p>
                 </div>
@@ -194,7 +195,7 @@ const AdminRegions: React.FC = () => {
                 <div className="bg-blue-50 rounded-xl p-4 text-center">
                   <Banknote className="w-6 h-6 text-blue-600 mx-auto mb-2" />
                   <p className="text-2xl font-bold text-blue-600">
-                    {(regionProjects.filter(p => p.isApprovedByDirector).reduce((s, p) => s + (p.allocatedBudget || 0), 0) / 1000000).toFixed(0)} mln
+                    {formatMoney(regionProjects.filter(p => p.isApprovedByDirector).reduce((s, p) => s + (p.allocatedBudget || 0), 0))}
                   </p>
                   <p className="text-sm text-blue-600">Byudjet</p>
                 </div>
@@ -237,7 +238,7 @@ const AdminRegions: React.FC = () => {
                           )}
                           {project.allocatedBudget && (
                             <p className="text-sm text-green-600 mt-1">
-                              {(project.allocatedBudget / 1000000).toFixed(0)} mln
+                              {formatMoney(project.allocatedBudget)}
                             </p>
                           )}
                         </div>

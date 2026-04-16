@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { REGIONS } from '../../data/regions';
 import { Project, PARTNER_TYPES } from '../../types';
+import { formatMoney } from '../../utils/format';
 import {
   Search,
   X,
@@ -118,7 +119,7 @@ const AdminProjects: React.FC = () => {
         </div>
         <div className="bg-white rounded-xl p-4 border border-emerald-200">
           <p className="text-sm text-emerald-600">Jami byudjet</p>
-          <p className="text-xl font-bold text-emerald-600">{(stats.totalBudget / 1000000).toFixed(0)} mln</p>
+          <p className="text-xl font-bold text-emerald-600">{formatMoney(stats.totalBudget)}</p>
         </div>
       </div>
 
@@ -204,7 +205,7 @@ const AdminProjects: React.FC = () => {
                     {project.isApprovedByDirector && project.allocatedBudget && (
                       <div className="text-right">
                         <p className="text-sm font-semibold text-green-600">
-                          {(project.allocatedBudget / 1000000).toFixed(0)} mln
+                          {formatMoney(project.allocatedBudget)}
                         </p>
                         {project.assignedPartner && (
                           <p className="text-xs text-gray-500">{project.assignedPartner}</p>
@@ -340,7 +341,7 @@ const AdminProjects: React.FC = () => {
                               Ajratilgan mablag'
                             </p>
                             <p className="font-semibold text-green-800">
-                              {(selectedProject.allocatedBudget / 1000000).toFixed(0)} mln so'm
+                              {formatMoney(selectedProject.allocatedBudget)}
                             </p>
                           </div>
                         )}

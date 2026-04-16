@@ -4,6 +4,7 @@ import { useData } from '../../context/DataContext';
 import { REGIONS } from '../../data/regions';
 import { Project, PROJECT_CATEGORIES, PARTNER_TYPES } from '../../types';
 import FileUpload from '../../components/FileUpload/FileUpload';
+import { formatMoney } from '../../utils/format';
 import {
   Search,
   X,
@@ -250,7 +251,7 @@ const UserProjects: React.FC = () => {
                   {project.isApprovedByDirector && project.allocatedBudget && (
                     <div className="text-left sm:text-right">
                       <p className="text-base sm:text-lg font-bold text-green-600">
-                        {project.allocatedBudget >= 1000000000 ? `${(project.allocatedBudget / 1000000000).toFixed(1)} mlrd` : `${(project.allocatedBudget / 1000000).toFixed(0)} mln`}
+                        {formatMoney(project.allocatedBudget)}
                       </p>
                       <p className="text-xs text-gray-400">ajratilgan</p>
                     </div>
@@ -389,7 +390,7 @@ const UserProjects: React.FC = () => {
                             {selectedProject.allocatedBudget && (
                               <div>
                                 <p className="text-xs text-green-600">Ajratilgan mablag'</p>
-                                <p className="font-semibold text-green-800">{selectedProject.allocatedBudget >= 1000000000 ? `${(selectedProject.allocatedBudget / 1000000000).toFixed(1)} mlrd` : `${(selectedProject.allocatedBudget / 1000000).toFixed(0)} mln`} so'm</p>
+                                <p className="font-semibold text-green-800">{formatMoney(selectedProject.allocatedBudget)}</p>
                               </div>
                             )}
                           </div>
@@ -628,9 +629,8 @@ const UserProjects: React.FC = () => {
                             <div className="bg-white rounded-lg p-3 sm:p-4 border border-green-200">
                               <p className="text-xs text-green-600 mb-1">Ajratilgan mablag'</p>
                               <p className="font-bold text-green-800 text-lg sm:text-xl">
-                                {selectedProject.allocatedBudget >= 1000000000 ? `${(selectedProject.allocatedBudget / 1000000000).toFixed(1)} mlrd` : `${(selectedProject.allocatedBudget / 1000000).toFixed(0)} mln`}
+                                {formatMoney(selectedProject.allocatedBudget)}
                               </p>
-                              <p className="text-sm text-green-600">so'm</p>
                             </div>
                           )}
                         </div>
@@ -656,7 +656,7 @@ const UserProjects: React.FC = () => {
                       <CheckCircle className="w-12 h-12 text-green-600 mx-auto" />
                       <p className="text-green-700 font-medium">Bu loyiha maqullangan</p>
                       {selectedProject.allocatedBudget && (
-                        <p className="text-green-600">Ajratilgan: {selectedProject.allocatedBudget >= 1000000000 ? `${(selectedProject.allocatedBudget / 1000000000).toFixed(1)} mlrd` : `${(selectedProject.allocatedBudget / 1000000).toFixed(0)} mln`} so'm</p>
+                        <p className="text-green-600">Ajratilgan: {formatMoney(selectedProject.allocatedBudget)}</p>
                       )}
                     </div>
                   )}

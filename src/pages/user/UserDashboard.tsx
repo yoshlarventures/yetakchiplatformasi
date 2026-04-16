@@ -5,6 +5,7 @@ import { useData } from '../../context/DataContext';
 import { REGIONS } from '../../data/regions';
 import { HACKATHONS } from '../../data/mockData';
 import { DonutChart, ChartLegend, ProgressBar } from '../../components/Charts/SimpleCharts';
+import { formatMoney } from '../../utils/format';
 import {
   FolderKanban,
   Users,
@@ -104,9 +105,7 @@ const UserDashboard: React.FC = () => {
           <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 sm:px-5 sm:py-3 rounded-xl self-start sm:self-auto">
             <p className="text-xs opacity-90">Jami ajratilgan</p>
             <p className="text-lg sm:text-xl font-bold">
-              {totalBudget >= 1000000000
-                ? `${(totalBudget / 1000000000).toFixed(1)} mlrd so'm`
-                : `${(totalBudget / 1000000).toFixed(0)} mln so'm`}
+              {formatMoney(totalBudget)}
             </p>
           </div>
         )}
@@ -320,9 +319,7 @@ const UserDashboard: React.FC = () => {
                   <div className="mt-2 pt-2 border-t border-gray-200 flex items-center gap-3 text-xs">
                     <span className="text-green-600 flex items-center gap-1">
                       <Banknote className="w-3.5 h-3.5" />
-                      {project.allocatedBudget >= 1000000000
-                        ? `${(project.allocatedBudget / 1000000000).toFixed(1)} mlrd`
-                        : `${(project.allocatedBudget / 1000000).toFixed(0)} mln`}
+                      {formatMoney(project.allocatedBudget)}
                     </span>
                     {project.assignedPartner && (
                       <span className="text-blue-600">{project.assignedPartner}</span>

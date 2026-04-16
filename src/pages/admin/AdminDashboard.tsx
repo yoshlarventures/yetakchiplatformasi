@@ -5,6 +5,7 @@ import { REGIONS } from '../../data/regions';
 import { HACKATHONS } from '../../data/mockData';
 import { HACKATHON_STATUS_NAMES } from '../../types';
 import { DonutChart, ChartLegend, HorizontalBarChart, BarChart } from '../../components/Charts/SimpleCharts';
+import { formatMoney } from '../../utils/format';
 import {
   MapPin,
   FolderKanban,
@@ -174,9 +175,7 @@ const AdminDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-xl font-bold text-indigo-700">
-                {totalBudget >= 1000000000
-                  ? `${(totalBudget / 1000000000).toFixed(1)} mlrd`
-                  : `${(totalBudget / 1000000).toFixed(0)} mln`}
+                {formatMoney(totalBudget)}
               </p>
               <p className="text-xs text-indigo-600">Byudjet</p>
             </div>
